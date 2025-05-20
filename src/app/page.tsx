@@ -1,50 +1,35 @@
 import Image from 'next/image';
-import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
-import LoginIcon from '@mui/icons-material/Login';
 import React from 'react';
 import {
   Box,
-  Button,
-  Paper,
   Stack,
   AppBar,
   Toolbar,
   Typography,
   Container,
 } from '@mui/material';
+import FormsWrapper from './components/Forms/FormsWrapper';
 
 export default function Home() {
   return (
-    <Container className="flex flex-col items-center h-screen justify-center min-h-screen p-4 ">
+    <Container className="flex flex-col items-center h-screen justify-center min-h-screen border-2">
       <Stack
         display={'flex'}
         direction={'row'}
-        className="items-center justify-between gap-2 w-full"
+        className="items-center justify-between w-screen max-w-screen-xl"
       >
-        <Box className="hidden h-full w-0 sm:w-[30%] md:w-[50%] lg:w-full md:flex items-center justify-center  transition-all duration-500 ease-in-out">
+        <Box className="relative hidden h-full w-0 sm:w-[30%] md:w-[50%] lg:w-screen md:flex items-center justify-center transition-all duration-500 ease-in-out overflow-hidden">
           <Image
             aria-hidden
             src="/dentora-pro-login-screen.png"
             alt="Dentora Pro Logon Screen"
             priority
-            width={515}
-            height={785}
-            className="
-            border rounded-lg
-      transition-all duration-500 ease-in-out
-      lg:opacity-100
-      md:opacity-50
-      sm:opacity-30
-      opacity-0
-      md:hover:opacity-85
-      md:hover:scale-95
-      md:hover:border-4
-      md:hover:border-sky-500
-      md:hover:rounded-4xl
-        lg:translate-x-0
-      md:translate-x-[-50%]
-      sm:translate-x-[-100%]
-    "
+            fill
+            className="transition-all duration-500 ease-in-out object-cover lg:opacity-100 md:opacity-50 sm:opacity-30 opacity-0 lg:translate-x-0 md:translate-x-[-50%] sm:translate-x-[-100%]"
+            style={{
+              maxWidth: '100%',
+              maxHeight: '100%',
+            }}
           />
         </Box>
         <Stack
@@ -59,63 +44,21 @@ export default function Home() {
               sm: 'url(/dentora-pro-login-screen-02.png)',
               md: 'none',
             },
+            backgroundColor: {
+              sm: 'transparent',
+              md: 'white',
+            },
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
         >
-          <Box className="flex items-center gap-2">
-            <Paper sx={{ padding: 0.5 }} elevation={1}>
-              <HealthAndSafetyIcon
-                sx={{
-                  fontSize: '3rem',
-                }}
-              />
-            </Paper>
-            <Typography
-              className="text-5xl font-bold text-sky-500 text-center"
-              variant="h3"
-              component="h1"
-              fontWeight={700}
-              fontSize={'3rem'}
-              fontFamily={'var(--font-inter)'}
-            >
-              Dentora Pro
-            </Typography>
-          </Box>
-          <Box className="flex flex-col items-center justify-center">
-            <Typography
-              variant="body1"
-              fontFamily={'var(--font-inter)'}
-              sx={{ width: '100%', maxWidth: '600px' }}
-              textAlign={'center'}
-              fontSize={'1rem'}
-              color={'#ffffff'}
-              fontWeight={400}
-              className="text-center"
-              marginTop={2}
-              marginBottom={4}
-            >
-              Dentora Pro is a powerful and flexible web application
-              designed to streamline appointment management for dental
-              clinics, offering an intuitive and efficient scheduling
-              experience.
-            </Typography>
-            <Button
-              href="/login"
-              className="mt-4"
-              variant="outlined"
-              startIcon={<LoginIcon />}
-            >
-              Login
-            </Button>
-          </Box>
+          <FormsWrapper />
         </Stack>
       </Stack>
-      <footer className="absolute bottom-0 right-0 left-0 flex items-center justify-center"></footer>
       <AppBar
         position="fixed"
-        sx={{ top: 'auto', bottom: 0 }}
-        color="transparent"
+        sx={{ top: 'auto', bottom: 0, backgroundColor: '#363636' }}
+        color="primary"
       >
         <Toolbar>
           <Typography
@@ -130,24 +73,18 @@ export default function Home() {
               fontFamily: 'var(--font-inter-ui)',
               fontSize: '0.875rem',
               fontWeight: 400,
-              color: '#ffffff',
+              color: '#fff',
             }}
           >
-            © {new Date().getFullYear()} Proudly created by
+            Copyright © {new Date().getFullYear()} Dentora Pro.
+            Proudly created by
             <a
-              className="pl- flex items-center gap-2 hover:underline hover:underline-offset-4"
+              className="pl- flex items-center gap-2 hover:text-[#3CA687] hover:underline hover:underline-offset-4"
               href="https://codecrafterslabs.com/"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Image
-                aria-hidden
-                src="/globe.svg"
-                alt="Globe icon"
-                width={16}
-                height={16}
-              />
-              codecrafterslabs.com →
+              codecrafterslabs.com
             </a>
           </Typography>
         </Toolbar>
