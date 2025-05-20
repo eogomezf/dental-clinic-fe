@@ -1,3 +1,4 @@
+'use client';
 import Image from 'next/image';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import LoginIcon from '@mui/icons-material/Login';
