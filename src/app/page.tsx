@@ -12,6 +12,15 @@ import {
 import FormsWrapper from './components/Forms/FormsWrapper';
 
 export default function Home() {
+
+  const [showLogin, setShowLogin] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [apiError, setApiError] = useState('');
+  const router = useRouter();
+
   return (
     <Container className="flex flex-col items-center h-screen justify-center min-h-screen border-2">
       <Stack
