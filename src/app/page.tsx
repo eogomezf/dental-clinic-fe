@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import LoginIcon from '@mui/icons-material/Login';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
 import React from 'react';
 import {
   Box,
@@ -100,6 +101,7 @@ export default function Home() {
               clinics, offering an intuitive and efficient scheduling
               experience.
             </Typography>
+            <Box className="flex gap-4">
             <Button
               href="/login"
               className="mt-4"
@@ -108,6 +110,15 @@ export default function Home() {
             >
               Login
             </Button>
+            <Button
+              href="/signup"
+              className="mt-4"
+              variant="outlined"
+              startIcon={<HowToRegIcon />}
+            >
+              Sign up
+            </Button>
+            </Box>
           </Box>
         </Stack>
       </Stack>
