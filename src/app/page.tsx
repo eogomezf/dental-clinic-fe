@@ -42,6 +42,28 @@ export default function Home() {
     return isValid;
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setApiError('');
+
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const { data } = await axios.post('http://localhost:8080/auth/signin', {
+        email,
+        password,
+      });
+      document.cookie = `token=${data.token}; path=/`;
+      document.cookie = `userId=${data.user._id}; path=/`;
+      document.cookie = `role=${data.user.role}; path=/`;
+      router.push('/appointment');
+    } catch (error) {
+      setApiError(error.response?.data?.message || 'Sign-in failed');
+    }
+  };
+
   return (
     <Container className="flex flex-col items-center h-screen justify-center min-h-screen border-2">
       <Stack
