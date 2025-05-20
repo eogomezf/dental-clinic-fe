@@ -28,6 +28,27 @@ export default function Home() {
   const [apiError, setApiError] = useState('');
   const router = useRouter();
 
+  const validateForm = () => {
+    let isValid = true;
+    setEmailError('');
+    setPasswordError('');
+
+    if (!email) {
+      setEmailError('Email is required');
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError('Invalid email format');
+      isValid = false;
+    }
+
+    if (!password) {
+      setPasswordError('Password is required');
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
   return (
     <Container className="flex flex-col items-center h-screen justify-center min-h-screen p-4 ">
       <Stack
