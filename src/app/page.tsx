@@ -67,7 +67,7 @@ export default function Home() {
       document.cookie = `role=${data.user.role}; path=/`;
       router.push('/appointment');
     } catch (error) {
-      setApiError(error.response?.data?.message || 'Sign-in failed');
+      setApiError(error.response?.data?.message || 'An error occurred. Sign-in failed');
     }
   };
 
@@ -120,62 +120,117 @@ export default function Home() {
             backgroundPosition: 'center',
           }}
         >
-          <Box className="flex items-center gap-2">
-            <Paper sx={{ padding: 0.5 }} elevation={1}>
-              <HealthAndSafetyIcon
-                sx={{
-                  fontSize: '3rem',
-                }}
-              />
-            </Paper>
-            <Typography
-              className="text-5xl font-bold text-sky-500 text-center"
-              variant="h3"
-              component="h1"
-              fontWeight={700}
-              fontSize={'3rem'}
-              fontFamily={'var(--font-inter)'}
-            >
-              Dentora Pro
-            </Typography>
-          </Box>
-          <Box className="flex flex-col items-center justify-center">
-            <Typography
-              variant="body1"
-              fontFamily={'var(--font-inter)'}
-              sx={{ width: '100%', maxWidth: '600px' }}
-              textAlign={'center'}
-              fontSize={'1rem'}
-              color={'#ffffff'}
-              fontWeight={400}
-              className="text-center"
-              marginTop={2}
-              marginBottom={4}
-            >
-              Dentora Pro is a powerful and flexible web application
-              designed to streamline appointment management for dental
-              clinics, offering an intuitive and efficient scheduling
-              experience.
-            </Typography>
-            <Box className="flex gap-4">
-            <Button
-              href="/login"
-              className="mt-4"
-              variant="outlined"
-              startIcon={<LoginIcon />}
-            >
-              Login
-            </Button>
-            <Button
-              href="/signup"
-              className="mt-4"
-              variant="outlined"
-              startIcon={<HowToRegIcon />}
-            >
-              Sign up
-            </Button>
+          {showLogin ? (
+            <Box className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+              <Typography variant="h5" className="text-center mb-4">
+                Sign in to Dentora Pro
+              </Typography>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <TextField
+                  label="Email"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  error={!!emailError}
+                  helperText={emailError}
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  label="Password"
+                  name="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  error={!!passwordError}
+                  helperText={passwordError}
+                  fullWidth
+                  margin="normal"
+                />
+                {apiError && (
+                  <Typography color="error" variant="body2" className="text-center">
+                    {apiError}
+                  </Typography>
+                )}
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  startIcon={<LoginIcon />}
+                >
+                  Sign In
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  fullWidth
+                  onClick={() => setShowLogin(false)}
+                  className="mt-2"
+                >
+                  Back
+                </Button>
+              </form>
             </Box>
-          </Box>
+          ) : (
+            <>
+              <Box className="flex items-center gap-2">
+                <Paper sx={{ padding: 0.5 }} elevation={1}>
+                  <HealthAndSafetyIcon
+                    sx={{
+                      fontSize: '3rem',
+                    }}
+                  />
+                </Paper>
+                <Typography
+                  className="text-5xl font-bold text-sky-500 text-center"
+                  variant="h3"
+                  component="h1"
+                  fontWeight={700}
+                  fontSize={'3rem'}
+                  fontFamily={'var(--font-inter)'}
+                >
+                  Dentora Pro
+                </Typography>
+              </Box>
+              <Box className="flex flex-col items-center justify-center">
+                <Typography
+                  variant="body1"
+                  fontFamily={'var(--font-inter)'}
+                  sx={{ width: '100%', maxWidth: '600px' }}
+                  textAlign={'center'}
+                  fontSize={'1rem'}
+                  color={'#ffffff'}
+                  fontWeight={400}
+                  className="text-center"
+                  marginTop={2}
+                  marginBottom={4}
+                >
+                  Dentora Pro is a powerful and flexible web application designed to streamline appointment management for dental clinics, offering an intuitive and efficient scheduling experience.
+                </Typography>
+                <Box className="flex gap-4">
+                  <Button
+                    onClick={() => setShowLogin(true)}
+                    className="mt-4"
+                    variant="outlined"
+                    startIcon={<LoginIcon />}
+                    sx={{ color: '#ffffff', borderColor: '#ffffff' }}
+                  >
+                    Login
+                  </Button>
+                  <Button
+                    href="/signup"
+                    className="mt-4"
+                    variant="outlined"
+                    startIcon={<HowToRegIcon />}
+                    sx={{ color: '#ffffff', borderColor: '#ffffff' }}
+                  >
+                    Sign up
+                  </Button>
+                </Box>
+              </Box>
+            </>
+          )}
         </Stack>
       </Stack>
       <footer className="absolute bottom-0 right-0 left-0 flex items-center justify-center"></footer>
