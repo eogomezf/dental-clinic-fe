@@ -1,9 +1,8 @@
-'use client';
 import React from 'react';
 import { Formik, Form } from 'formik';
 import { SignUpFormProps, SignUpFormValues } from './Forms.types';
 import { SignUpSchema } from './ValidationSchemas';
-import { TextField, Button, Box, Stack } from '@mui/material';
+import { Button, Box, Stack } from '@mui/material';
 import { CustomTextField } from './CustomTextField';
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit }) => {
@@ -21,7 +20,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit }) => {
       validationSchema={SignUpSchema}
       onSubmit={onSubmit}
     >
-      {({ errors, touched }) => (
+      {() => (
         <Form className="w-screen max-w-lg p-4 min-h-96">
           <Box
             sx={{
