@@ -58,7 +58,7 @@ export default function Home() {
     }
 
     try {
-      const { data } = await axios.post('http://localhost:8080/auth/signin', {
+      const { data } = await axios.post('http://localhost:4000/auth/signin', {
         email,
         password,
       });
