@@ -58,7 +58,14 @@ export default function Home() {
       document.cookie = `token=${data.token}; path=/`;
       document.cookie = `userId=${data.user._id}; path=/`;
       document.cookie = `role=${data.user.role}; path=/`;
-      router.push('/appointment');
+      
+      const appointmentsRes = await axios.get('http://localhost:4000/appointment', {
+        headers: {
+          'x-access-token': data.token,
+        },
+      });
+  
+      console.log('Appointments:', appointmentsRes.data); 
     } catch (error) {
       setApiError(error.response?.data?.message || 'Sign-in failed');
     }
