@@ -1,40 +1,12 @@
 'use client';
 import React from 'react';
-import { Formik, Form, useField } from 'formik';
+import { Formik, Form} from 'formik';
 import { SignInFormProps, SignInFormValues } from './Forms.types';
 import { SignInSchema } from './ValidationSchemas';
-import { Box, TextField, Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
+import { CustomTextField } from './CustomTextField';
 
-const MyTextField: React.FC<{
-  name: string;
-  label: string;
-  type?: string;
-}> = ({ label, type = 'text', ...props }) => {
-  const [field, meta] = useField(props.name);
 
-  return (
-    <TextField
-      {...field}
-      type={type}
-      label={label}
-      fullWidth
-      variant="outlined"
-      error={meta.touched && Boolean(meta.error)}
-      helperText={meta.touched && meta.error}
-      sx={{
-        '& .MuiOutlinedInput-root': {
-          backgroundColor: 'white',
-          '& fieldset': {
-            borderColor: 'primary.main',
-          },
-        },
-        '& .MuiInputLabel-root': {
-          color: 'primary.main',
-        },
-      }}
-    />
-  );
-};
 
 const SignInForm: React.FC<SignInFormProps> = ({ onSubmit }) => {
   const initialValues: SignInFormValues = {
@@ -57,8 +29,8 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSubmit }) => {
             p: 3,
           }}
         >
-          <MyTextField name="email" label="Email" />
-          <MyTextField
+          <CustomTextField name="email" label="Email" />
+          <CustomTextField
             name="password"
             label="Password"
             type="password"

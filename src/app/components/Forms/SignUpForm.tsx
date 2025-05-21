@@ -4,6 +4,7 @@ import { Formik, Form } from 'formik';
 import { SignUpFormProps, SignUpFormValues } from './Forms.types';
 import { SignUpSchema } from './ValidationSchemas';
 import { TextField, Button, Box, Stack } from '@mui/material';
+import { CustomTextField } from './CustomTextField';
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit }) => {
   const initialValues: SignUpFormValues = {
@@ -31,109 +32,31 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit }) => {
             }}
           >
             <Stack direction="row" spacing={2}>
-              <TextField
+              <CustomTextField
                 name="firstName"
                 label="First Name"
-                variant="outlined"
-                fullWidth
-                error={touched.firstName && Boolean(errors.firstName)}
-                helperText={touched.firstName && errors.firstName}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    backgroundColor: 'white',
-                    '& fieldset': {
-                      borderColor: 'primary.main',
-                    },
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: 'primary.main',
-                  },
-                }}
+                type="text"
               />
-              <TextField
+              <CustomTextField
                 name="lastName"
                 label="Last Name"
-                variant="outlined"
-                fullWidth
-                error={touched.lastName && Boolean(errors.lastName)}
-                helperText={touched.lastName && errors.lastName}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    backgroundColor: 'white',
-                    '& fieldset': {
-                      borderColor: 'primary.main',
-                    },
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: 'primary.main',
-                  },
-                }}
+                type="text"
               />
             </Stack>
-            <TextField
+            <CustomTextField
               name="email"
               label="Email"
               type="email"
-              variant="outlined"
-              fullWidth
-              error={touched.email && Boolean(errors.email)}
-              helperText={touched.email && errors.email}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  backgroundColor: 'white',
-                  '& fieldset': {
-                    borderColor: 'primary.main',
-                  },
-                },
-                '& .MuiInputLabel-root': {
-                  color: 'primary.main',
-                },
-              }}
             />
-            <TextField
+            <CustomTextField
               name="password"
               label="Password"
               type="password"
-              variant="outlined"
-              fullWidth
-              error={touched.password && Boolean(errors.password)}
-              helperText={touched.password && errors.password}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  backgroundColor: 'white',
-                  '& fieldset': {
-                    borderColor: 'primary.main',
-                  },
-                },
-                '& .MuiInputLabel-root': {
-                  color: 'primary.main',
-                },
-              }}
             />
-            <TextField
+            <CustomTextField
               name="confirmPassword"
               label="Confirm Password"
               type="password"
-              variant="outlined"
-              fullWidth
-              error={
-                touched.confirmPassword &&
-                Boolean(errors.confirmPassword)
-              }
-              helperText={
-                touched.confirmPassword && errors.confirmPassword
-              }
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  backgroundColor: 'white',
-                  '& fieldset': {
-                    borderColor: 'primary.main',
-                  },
-                },
-                '& .MuiInputLabel-root': {
-                  color: 'primary.main',
-                },
-              }}
             />
             <Button
               type="submit"
