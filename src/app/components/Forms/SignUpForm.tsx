@@ -18,7 +18,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit }) => {
     <Formik
       initialValues={initialValues}
       validationSchema={SignUpSchema}
-      onSubmit={onSubmit}
+      onSubmit={(values, { resetForm }) => {
+        onSubmit(values);
+        resetForm();
+      }}
     >
       {() => (
         <Form className="w-screen max-w-lg p-4 min-h-96">
@@ -49,7 +52,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit }) => {
             />
             <CustomTextField
               name="password"
-              label="Password"
+              label="Enter Password"
               type="password"
             />
             <CustomTextField
