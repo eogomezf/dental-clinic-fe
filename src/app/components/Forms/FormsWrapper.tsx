@@ -6,12 +6,41 @@ import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
 import { SignInFormValues, SignUpFormValues } from './Forms.types';
 import { Box, Paper, Typography } from '@mui/material';
+import axios, { AxiosError } from 'axios';
 
 const FormsWrapper: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSignIn = (values: SignInFormValues) => {
-    console.log('Sign In:', values);
+  const handleSignIn = async (values: SignInFormValues) => {
+    try {
+      const { data } = await axios.post('http://localhost:4000/auth/signin', {
+        email: values.email,
+        password: values.password
+      });
+      document.cookie = `token=${data.token}; path=/`;
+      document.cookie = `userId=${data.user._id}; path=/`;
+      document.cookie = `role=${data.user.role}; path=/`;
+      
+      const appointmentsRes = await axios.get('http://localhost:4000/appointment', {
+        headers: {
+          'x-access-token': data.token,
+        },
+      });
+  
+      console.log('Appointments:', appointmentsRes.data); 
+    } catch (err: AxiosError) {
+      let errorMessage: string;
+      if (err.response) {
+        errorMessage = err.response.data?.message || 'Sign-in failed. Please try again.';
+      } else if (err.request) {
+        errorMessage = 'Network error. Please check your connection.';
+      } else {
+        errorMessage = 'An unexpected error occurred. Please try again.';
+      }
+      setError(errorMessage);
+      console.error('Sign-in error:', errorMessage);
+    }
   };
 
   const handleSignUp = (values: SignUpFormValues) => {
@@ -74,6 +103,11 @@ const FormsWrapper: React.FC = () => {
             Dentora Pro
           </Typography>
         </Box>
+        {error && (
+          <Typography color="error" sx={{ mb: 2 }}>
+            {error}
+          </Typography>
+        )}
         <FormsTab
           value={activeTab}
           onChange={(_, newValue) => setActiveTab(newValue)}
