@@ -7,10 +7,12 @@ import SignUpForm from './SignUpForm';
 import { SignInFormValues, SignUpFormValues } from './Forms.types';
 import { Box, Paper, Typography } from '@mui/material';
 import axios, { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
 
 const FormsWrapper: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleSignIn = async (values: SignInFormValues) => {
     try {
@@ -21,14 +23,8 @@ const FormsWrapper: React.FC = () => {
       document.cookie = `token=${data.token}; path=/`;
       document.cookie = `userId=${data.user._id}; path=/`;
       document.cookie = `role=${data.user.role}; path=/`;
+      router.push('/appointment');
       
-      const appointmentsRes = await axios.get('http://localhost:4000/appointment', {
-        headers: {
-          'x-access-token': data.token,
-        },
-      });
-  
-      console.log('Appointments:', appointmentsRes.data); 
     } catch (err: AxiosError) {
       let errorMessage: string;
       if (err.response) {
