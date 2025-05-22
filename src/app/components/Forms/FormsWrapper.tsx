@@ -6,7 +6,6 @@ import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
 import { SignInFormValues, SignUpFormValues } from './Forms.types';
 import { Box, Paper, Typography } from '@mui/material';
-import axios, { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 
 const FormsWrapper: React.FC = () => {
@@ -16,7 +15,7 @@ const FormsWrapper: React.FC = () => {
 
   const handleSignIn = async (values: SignInFormValues) => {
     try {
-      const { data } = await axios.post('http://localhost:4000/auth/signin', {
+      const { data } = await fetch('http://localhost:4000/auth/signin', {
         email: values.email,
         password: values.password
       });
@@ -25,7 +24,7 @@ const FormsWrapper: React.FC = () => {
       document.cookie = `role=${data.user.role}; path=/`;
       router.push('/appointment');
       
-    } catch (err: AxiosError) {
+    } catch (err) {
       let errorMessage: string;
       if (err.response) {
         errorMessage = err.response.data?.message || 'Sign-in failed. Please try again.';
