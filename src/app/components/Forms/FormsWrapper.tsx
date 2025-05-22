@@ -15,26 +15,39 @@ const FormsWrapper: React.FC = () => {
 
   const handleSignIn = async (values: SignInFormValues) => {
     try {
-      const { data } = await fetch('http://localhost:4000/auth/signin', {
-        email: values.email,
-        password: values.password
+      const response = await fetch('http://localhost:4000/auth/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+        }),
+        cache: 'no-store', 
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Sign-in failed');
+      }
+
+      const data = await response.json();
       document.cookie = `token=${data.token}; path=/`;
       document.cookie = `userId=${data.user._id}; path=/`;
       document.cookie = `role=${data.user.role}; path=/`;
       router.push('/appointment');
-      
-    } catch (err) {
+    } catch (err: unknown) {
       let errorMessage: string;
-      if (err.response) {
-        errorMessage = err.response.data?.message || 'Sign-in failed. Please try again.';
-      } else if (err.request) {
-        errorMessage = 'Network error. Please check your connection.';
+      if (err instanceof Error) {
+        errorMessage = err.message;
+        if (err.message === 'Failed to fetch') {
+          errorMessage = 'Network error. Please check your connection.';
+        }
       } else {
         errorMessage = 'An unexpected error occurred. Please try again.';
       }
       setError(errorMessage);
-      console.error('Sign-in error:', errorMessage);
     }
   };
 
