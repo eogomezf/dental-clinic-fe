@@ -1,13 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import SignUpForm from './SignUpForm';
-import { action } from '@storybook/addon-actions';
+import { expect, userEvent, within, waitFor } from '@storybook/test';
+import { fn } from '@storybook/test';
 
 const meta: Meta<typeof SignUpForm> = {
   title: 'Components/Forms/SignUpForm',
   component: SignUpForm,
   tags: ['autodocs'],
-  argTypes: {
-    onSubmit: { action: 'submitted' },
+  args: {
+    onSubmit: fn(),
   },
   parameters: {
     layout: 'centered',
@@ -24,22 +25,168 @@ export default meta;
 
 type Story = StoryObj<typeof SignUpForm>;
 
-export const Default: Story = {
-  args: {
-    onSubmit: action('SignUpForm submitted'),
+export const Default: Story = {};
+export const SuccessfulSubmission: Story = {
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.type(
+      canvas.getByLabelText(/First Name/i),
+      'Alvison',
+      { delay: 10 }
+    );
+
+    await userEvent.type(
+      canvas.getByLabelText(/Last Name/i),
+      'Hunter Arnuero',
+      { delay: 10 }
+    );
+
+    await userEvent.type(
+      canvas.getByLabelText(/Email/i),
+      'alvison.hunter@codecrafterslabs.com',
+      { delay: 10 }
+    );
+
+    await userEvent.type(
+      canvas.getByLabelText(/Enter Password/i),
+      'securePassword123!',
+      { delay: 10 }
+    );
+
+    await userEvent.type(
+      canvas.getByLabelText(/Confirm Password/i),
+      'securePassword123!',
+      { delay: 10 }
+    );
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: /Sign Up/i })
+    );
+
+    await waitFor(() => {
+      expect(args.onSubmit).toHaveBeenCalled();
+    });
   },
 };
 
-export const WithValidationErrors: Story = {
-  args: {
-    onSubmit: action('SignUpForm submitted'),
+export const ShowsValidationErrors: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: /sign up/i })
+    );
+
+    await waitFor(() => {
+      expect(
+        canvas.getByText('Name is Required')
+      ).toBeInTheDocument();
+
+      expect(
+        canvas.getByText('Lastname is Required')
+      ).toBeInTheDocument();
+
+      expect(
+        canvas.getByText('Email is Required')
+      ).toBeInTheDocument();
+      expect(
+        canvas.getByText('Password is Required')
+      ).toBeInTheDocument();
+
+      expect(
+        canvas.getByText('Confirm Password is Required')
+      ).toBeInTheDocument();
+    });
   },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Shows validation errors when fields are invalid or empty.',
-      },
-    },
+};
+
+export const InvalidEmailFormat: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.type(
+      canvas.getByLabelText(/First Name/i),
+      'Alvison',
+      { delay: 10 }
+    );
+
+    await userEvent.type(
+      canvas.getByLabelText(/Last Name/i),
+      'Hunter Arnuero',
+      { delay: 10 }
+    );
+
+    await userEvent.type(
+      canvas.getByLabelText(/Email/i),
+      'an-invalid-email',
+      { delay: 10 }
+    );
+
+    await userEvent.type(
+      canvas.getByLabelText(/Enter Password/i),
+      'securePassword123!',
+      { delay: 10 }
+    );
+
+    await userEvent.type(
+      canvas.getByLabelText(/Confirm Password/i),
+      'securePassword123!',
+      { delay: 10 }
+    );
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: /Sign Up/i })
+    );
+
+    await waitFor(() => {
+      expect(canvas.getByText('Invalid email')).toBeInTheDocument();
+    });
+  },
+};
+
+export const PasswordsMismatch: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.type(
+      canvas.getByLabelText(/First Name/i),
+      'Declan Jaleel',
+      { delay: 10 }
+    );
+
+    await userEvent.type(
+      canvas.getByLabelText(/Last Name/i),
+      'Hunter Acevedo',
+      { delay: 10 }
+    );
+
+    await userEvent.type(
+      canvas.getByLabelText(/Email/i),
+      'daeglanjhunter@gmail.com',
+      { delay: 10 }
+    );
+
+    await userEvent.type(
+      canvas.getByLabelText(/Enter Password/i),
+      'securePassword456!',
+      { delay: 10 }
+    );
+
+    await userEvent.type(
+      canvas.getByLabelText(/Confirm Password/i),
+      'secPwd123!',
+      { delay: 10 }
+    );
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: /Sign Up/i })
+    );
+
+    await waitFor(() => {
+      expect(
+        canvas.getByText('Passwords must match')
+      ).toBeInTheDocument();
+    });
   },
 };

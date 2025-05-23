@@ -9,18 +9,16 @@ export const SignUpSchema = Yup.object().shape({
   firstName: Yup.string()
     .min(2, 'Too Short!')
     .max(50, 'Too Long!')
-    .required('Required'),
+    .required('Name is Required'),
   lastName: Yup.string()
     .min(2, 'Too Short!')
     .max(50, 'Too Long!')
-    .required('Required'),
-  email: Yup.string()
-    .email('Invalid email')
-    .required('Required'),
+    .required('Lastname is Required'),
+  email: Yup.string().email('Invalid email').required('Email is Required'),
   password: Yup.string()
     .min(8, 'Too Short!')
-    .required('Required'),
+    .required('Password is Required'),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref('password')], 'Passwords must match')
-    .required('Required'),
+    .required('Confirm Password is Required'),
 });

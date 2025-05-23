@@ -44,6 +44,7 @@ const FormsTab: React.FC<FormsTabProps> = ({
         >
           <Tab
             label="Sign In"
+            data-testid="sign-in-tab"
             className="font-medium w-full text-2xl"
             sx={{
               color: value === 0 ? 'yellow' : 'gray',
@@ -53,6 +54,7 @@ const FormsTab: React.FC<FormsTabProps> = ({
           />
           <Tab
             label="Sign Up"
+            data-testid="sign-up-tab"
             className="font-medium"
             sx={{
               color: value === 1 ? 'yellow' : 'gray',
