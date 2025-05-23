@@ -1,5 +1,11 @@
-export const fetchAPI = async (endpoint: string, method: string, body?: object) => {
-    const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
+type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD';
+
+export const fetchAPI = async (
+  endpoint: string,
+  method: HTTPMethod,
+  body?: object
+) => {
     const url = `${baseURL}${endpoint}`;
   
     const response = await fetch(url, {
