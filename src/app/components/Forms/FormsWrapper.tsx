@@ -7,6 +7,7 @@ import SignUpForm from './SignUpForm';
 import { SignInFormValues, SignUpFormValues } from './Forms.types';
 import { Box, Paper, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
+import { fetchAPI } from '../../../utils/api';
 
 const FormsWrapper: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -15,24 +16,10 @@ const FormsWrapper: React.FC = () => {
 
   const handleSignIn = async (values: SignInFormValues) => {
     try {
-      const response = await fetch('http://localhost:4000/auth/signin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: values.email,
-          password: values.password,
-        }),
-        cache: 'no-store', 
+      const data = await fetchAPI('/auth/signin', 'POST', {
+        email: values.email,
+        password: values.password,
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Sign-in failed');
-      }
-
-      const data = await response.json();
       document.cookie = `token=${data.token}; path=/`;
       document.cookie = `userId=${data.user._id}; path=/`;
       document.cookie = `role=${data.user.role}; path=/`;
