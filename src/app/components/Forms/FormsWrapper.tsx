@@ -4,7 +4,7 @@ import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import FormsTab from './FormsTab';
 import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
-import { SignInFormValues, SignUpFormValues } from './Forms.types';
+import type { SignInFormValues, SignUpFormValues } from './Forms.types';
 import { Box, Paper, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { fetchAPI } from '../../../utils/api';
