@@ -1,5 +1,6 @@
 
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD';
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export const fetchAPI = async (
   endpoint: string,
