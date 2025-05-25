@@ -23,7 +23,7 @@ const FormsWrapper: React.FC = () => {
       document.cookie = `token=${data.token}; path=/`;
       document.cookie = `userId=${data.user._id}; path=/`;
       document.cookie = `role=${data.user.role}; path=/`;
-      router.push('/appointment');
+      router.push('/appointments');
     } catch (err: unknown) {
       let errorMessage: string;
       if (err instanceof Error) {
