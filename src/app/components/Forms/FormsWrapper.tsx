@@ -8,7 +8,6 @@ import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
 import type { SignInFormValues, SignUpFormValues } from './Forms.types';
 import { Box, Paper, Typography } from '@mui/material';
-import { fetchAPI } from '../../../utils/api';
 import { signInAction } from '../../login/server-actions';
 
 const FormsWrapper: React.FC = () => {
