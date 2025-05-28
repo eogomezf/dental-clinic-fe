@@ -14,7 +14,7 @@ const FormsWrapper: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const { login } = useAuth();
-  const [state, signInDispatch, isPending] = useActionState(signInAction, { success: false, error: null });
+  const [state, formAction, isPending] = useActionState(signInAction, { success: false, error: null, user: undefined });
 
   useEffect(() => {
     if (state.success && state.user) {
@@ -36,7 +36,7 @@ const FormsWrapper: React.FC = () => {
     const formData = new FormData();
     formData.append('email', values.email);
     formData.append('password', values.password);
-    signInDispatch(formData);
+    await (formAction as (data: FormData) => Promise<void>)(formData);
   };
 
 
