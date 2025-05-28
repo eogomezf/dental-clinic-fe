@@ -1,42 +1,45 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
+import { useActionState } from 'react';
+import { useAuth } from '../../auth/context';
 import FormsTab from './FormsTab';
 import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
 import type { SignInFormValues, SignUpFormValues } from './Forms.types';
 import { Box, Paper, Typography } from '@mui/material';
-import { useRouter } from 'next/navigation';
 import { fetchAPI } from '../../../utils/api';
+import { signInAction } from '../../login/server-actions';
 
 const FormsWrapper: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const { login } = useAuth();
+  const [state, signInDispatch, isPending] = useActionState(signInAction, { success: false, error: null });
 
-  const handleSignIn = async (values: SignInFormValues) => {
-    try {
-      const data = await fetchAPI('/auth/signin', 'POST', {
-        email: values.email,
-        password: values.password,
-      });
-      document.cookie = `token=${data.token}; path=/`;
-      document.cookie = `userId=${data.user._id}; path=/`;
-      document.cookie = `role=${data.user.role}; path=/`;
-      router.push('/appointments');
-    } catch (err: unknown) {
-      let errorMessage: string;
-      if (err instanceof Error) {
-        errorMessage = err.message;
-        if (err.message === 'Failed to fetch') {
-          errorMessage = 'Network error. Please check your connection.';
-        }
+  useEffect(() => {
+    if (state.success && state.user) {
+      login(state.user);
+    } else if (state.error) {
+      let errorMessage: string = state.error;
+      if (errorMessage === 'Failed to fetch') {
+        errorMessage = 'Network error. Please check your connection.';
+      } else if (errorMessage.includes('Invalid credentials') || errorMessage.includes('email provided does not match')) {
+        errorMessage = 'Invalid email or password';
       } else {
         errorMessage = 'An unexpected error occurred. Please try again.';
       }
       setError(errorMessage);
     }
+  }, [state, login]);
+  
+  const handleSignIn = async (values: SignInFormValues) => {
+    const formData = new FormData();
+    formData.append('email', values.email);
+    formData.append('password', values.password);
+    signInDispatch(formData);
   };
+
 
   const handleSignUp = (values: SignUpFormValues) => {
     console.log('Sign Up:', values);
@@ -108,7 +111,7 @@ const FormsWrapper: React.FC = () => {
           onChange={(_, newValue) => setActiveTab(newValue)}
         >
           {activeTab === 0 ? (
-            <SignInForm onSubmit={handleSignIn} />
+            <SignInForm onSubmit={handleSignIn}  isSubmitting={isPending} />
           ) : (
             <SignUpForm onSubmit={handleSignUp} />
           )}
