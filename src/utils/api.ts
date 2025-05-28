@@ -5,7 +5,8 @@ const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 export const fetchAPI = async (
   endpoint: string,
   method: HTTPMethod,
-  body?: object
+  body?: object,
+  headers: Record<string, string> = {}
 ) => {
     const url = `${baseURL}${endpoint}`;
   
@@ -13,9 +14,11 @@ export const fetchAPI = async (
       method,
       headers: {
         'Content-Type': 'application/json',
+        ...headers,
       },
       body: body ? JSON.stringify(body) : undefined,
       cache: 'no-store',
+      credentials: 'include',
     });
   
     if (!response.ok) {
