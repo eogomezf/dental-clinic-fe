@@ -2,7 +2,14 @@
 import { fetchAPI } from '../../utils/api'
 import { cookies } from 'next/headers';
 
-export async function signInAction(formData: FormData) {
+
+type SignInState = {
+  success: boolean;
+  user?: { id: string; email: string; role: string };
+  error?: string | null;
+};
+
+export async function signInAction(prevState: SignInState, formData: FormData): Promise<SignInState> {
   try {
     const email = formData.get('email')?.toString() || '';
     const password = formData.get('password')?.toString() || '';
