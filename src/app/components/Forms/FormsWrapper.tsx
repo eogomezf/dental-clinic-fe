@@ -9,13 +9,21 @@ import SignUpForm from './SignUpForm';
 import type { SignInFormValues, SignUpFormValues } from './Forms.types';
 import { Box, Paper, Typography } from '@mui/material';
 import { signInAction } from '../../login/server-actions';
+import { useRouter } from 'next/navigation';
 
 const FormsWrapper: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const { login } = useAuth();
+  const { login, isAuthenticated, isLoading } = useAuth();
   const [state, formAction, isPending] = useActionState(signInAction, { success: false, error: null, user: undefined });
   const [isSubmitting, startTransition] = useTransition();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace('/appointments');
+    }
+  }, [isAuthenticated, isLoading, router]);
 
   useEffect(() => {
     if (state.success && state.user) {
