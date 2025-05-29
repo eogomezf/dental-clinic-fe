@@ -1,9 +1,19 @@
-import { Box, Typography } from '@mui/material';
+'use client';
+import { Box, Typography, Button } from '@mui/material';
 import Image from 'next/image';
+import { useAuth } from '../auth/context';
+import { logoutAction } from '../login/server-actions';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 
 
 export default function AppointmentsPage() {
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logoutAction();
+    logout();
+  };
+
   return (
     <ProtectedRoute>
     <Box sx={{ pt: 6, textAlign: 'center', minHeight: '100vh', position: 'relative' }}>
@@ -22,6 +32,14 @@ export default function AppointmentsPage() {
       <Typography variant="body1" sx={{ mt: 2 }}>
         Please check back later.
       </Typography>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={handleLogout}
+        sx={{ mt: 4, py: 1.5, px: 4 }}
+      >
+        Log Out
+      </Button>
     </Box>
     </ProtectedRoute>
   );
