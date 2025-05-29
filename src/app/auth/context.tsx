@@ -1,7 +1,6 @@
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchAPI } from '../../utils/api';
 
 type AuthContextType = {
   isAuthenticated: boolean;
