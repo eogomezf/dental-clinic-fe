@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useTransition } from 'react';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import { useActionState } from 'react';
 import { useAuth } from '../../auth/context';
@@ -15,6 +15,7 @@ const FormsWrapper: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { login } = useAuth();
   const [state, formAction, isPending] = useActionState(signInAction, { success: false, error: null, user: undefined });
+  const [isSubmitting, startTransition] = useTransition();
 
   useEffect(() => {
     if (state.success && state.user) {
@@ -36,7 +37,9 @@ const FormsWrapper: React.FC = () => {
     const formData = new FormData();
     formData.append('email', values.email);
     formData.append('password', values.password);
-    await (formAction as (data: FormData) => Promise<void>)(formData);
+    startTransition(() => {
+      formAction(formData);
+    });
   };
 
 
@@ -110,7 +113,7 @@ const FormsWrapper: React.FC = () => {
           onChange={(_, newValue) => setActiveTab(newValue)}
         >
           {activeTab === 0 ? (
-            <SignInForm onSubmit={handleSignIn}  isSubmitting={isPending} />
+            <SignInForm onSubmit={handleSignIn}  isSubmitting={isPending || isSubmitting} />
           ) : (
             <SignUpForm onSubmit={handleSignUp} />
           )}
