@@ -43,19 +43,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = (newUser: { id: string; email: string; role?: string }) => {
     setUser(newUser);
     setIsLoading(false);
-    router.push('/appointments');
+    router.replace('/appointments');
   };
 
   const logout = async () => {
-    try {
-      await fetchAPI('/auth/logout', 'POST');
-    } catch (err) {
-      console.error('Logout failed:', err);
-    }
     setToken(null);
     setUser(null);
     setIsLoading(false);
-    router.push('/');
+    router.replace('/');
   };
 
   return (
