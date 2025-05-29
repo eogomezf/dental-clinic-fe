@@ -1,8 +1,11 @@
 import { Box, Typography } from '@mui/material';
 import Image from 'next/image';
+import { ProtectedRoute } from '../components/ProtectedRoute';
+
 
 export default function AppointmentsPage() {
   return (
+    <ProtectedRoute>
     <Box sx={{ pt: 6, textAlign: 'center', minHeight: '100vh', position: 'relative' }}>
       <Typography variant="h2" gutterBottom>
         Appointments Page 
@@ -20,5 +23,6 @@ export default function AppointmentsPage() {
         Please check back later.
       </Typography>
     </Box>
+    </ProtectedRoute>
   );
 }
