@@ -5,6 +5,7 @@ import { fetchAPI } from '../../utils/api';
 
 type AuthContextType = {
   isAuthenticated: boolean;
+  isLoading: boolean;
   user: { id: string; email: string; role?: string } | null;
   token: string | null;
   login: (user: { id: string; email: string; role?: string }) => void;
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<{ id: string; email: string; role?: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -25,9 +27,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (response.ok) {
           const { token } = await response.json();
           setToken(token);
+        } else {
+          setToken(null);
         }
       } catch (err) {
         console.error('Failed to fetch token:', err);
+        setToken(null);
+      } finally {
+        setIsLoading(false);
       }
     };
     getToken();
@@ -35,18 +42,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = (newUser: { id: string; email: string; role?: string }) => {
     setUser(newUser);
+    setIsLoading(false);
     router.push('/appointments');
   };
 
   const logout = async () => {
-    await fetchAPI('/auth/logout', 'POST');
+    try {
+      await fetchAPI('/auth/logout', 'POST');
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
     setToken(null);
     setUser(null);
+    setIsLoading(false);
     router.push('/');
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated: !!token, user, token, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated: !!token, isLoading, user, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
