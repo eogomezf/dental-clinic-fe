@@ -1,59 +1,92 @@
 'use client';
-import { createContext, useContext, useState, useEffect } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback
+} from 'react';
 import { useRouter } from 'next/navigation';
+
+type UserProfile = {
+  id: string;
+  email: string;
+  role?: string;
+};
 
 type AuthContextType = {
   isAuthenticated: boolean;
   isLoading: boolean;
-  user: { id: string; email: string; role?: string } | null;
-  token: string | null;
-  login: (user: { id: string; email: string; role?: string }) => void;
+  user: UserProfile | null;
+  login: (userProfile: UserProfile) => void;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<{ id: string; email: string; role?: string } | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    const getToken = async () => {
-      try {
-        const response = await fetch('/api/auth/token', { credentials: 'include' });
-        if (response.ok) {
-          const { token } = await response.json();
-          setToken(token);
-        } else {
-          setToken(null);
-        }
-      } catch (err) {
-        console.error('Failed to fetch token:', err);
-        setToken(null);
-      } finally {
-        setIsLoading(false);
+  const fetchUserStatus = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/auth/token', {
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+      } else {
+        setUser(null);
       }
-    };
-    getToken();
+    } catch (err) {
+      console.error('Failed to fetch user status:', err);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const login = (newUser: { id: string; email: string; role?: string }) => {
-    setUser(newUser);
-    setIsLoading(false);
-    router.replace('/appointments');
+  useEffect(() => {
+    fetchUserStatus();
+  }, [fetchUserStatus]);
+
+  const login = (userProfile: UserProfile) => {
+    setUser(userProfile);
   };
 
   const logout = async () => {
-    setToken(null);
-    setUser(null);
-    setIsLoading(false);
-    router.replace('/');
+    try {
+      // TODO: implement this ROUTE HANDLER
+      const response = await fetch('/api/auth/logout', { method: 'POST' });
+
+      if (response.ok) {
+        setUser(null);
+        router.replace('/');
+      } else {
+        console.error('Failed to logout on server.');
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+      setUser(null);
+      router.replace('/');
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated: !!token, isLoading, user, token, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated: !!user,
+        isLoading,
+        user,
+        login,
+        logout
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
