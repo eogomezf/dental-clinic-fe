@@ -1,36 +1,39 @@
 'use server';
-import { fetchAPI } from '../../utils/api'
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { fetchAPI } from '@/utils/api';
 
+export async function loginAction(formData: FormData) {
+  const email = formData.get('email');
+  const password = formData.get('password');
 
-type SignInState = {
-  success: boolean;
-  user?: { id: string; email: string; role: string };
-  error?: string | null;
-};
-
-export async function signInAction(prevState: SignInState, formData: FormData): Promise<SignInState> {
   try {
-    const email = formData.get('email')?.toString() || '';
-    const password = formData.get('password')?.toString() || '';
-    const data = await fetchAPI('/auth/signin', 'POST', { email, password });
-    const cookieStore = await cookies();
-    cookieStore.set('token', data.token, {
+    const response = await fetchAPI('/auth/signin', 'POST', {
+      email,
+      password
+    });
+
+    if (!response) {
+      redirect('/');
+    }
+
+    const cookie = await cookies();
+    cookie.set('jwt_token', response.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24 * 1,
       path: '/',
-      maxAge: 7 * 24 * 60 * 60, // 7 days
-      sameSite: 'strict',
+      sameSite: 'lax'
     });
-    return { success: true, user: { id: data.user._id, email: data.user.email, role: data.user.role } };
-  } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Authentication failed';
-    return { success: false, error: errorMessage };
+
+    redirect('/appointments');
+  } catch (error) {
+    console.error('Login failed:', error);
   }
 }
 
 export async function logoutAction() {
-    const cookieStore = await cookies();
-    cookieStore.delete('token');
+  const cookieStore = await cookies();
+  cookieStore.delete('jwt_token');
   return { success: true };
 }

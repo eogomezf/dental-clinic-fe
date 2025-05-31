@@ -1,28 +1,33 @@
 'use client';
-import { useAuth } from '../auth/context';
+
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useAuth } from '../auth/context';
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
-  const [isChecked, setIsChecked] = useState(false);
 
   useEffect(() => {
-    if (!isLoading) {
-      setIsChecked(true);
-      if (!isAuthenticated) {
-        router.push('/');
-      }
+    if (!isLoading && !isAuthenticated) {
+      router.push('/');
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isLoading, isAuthenticated, router]);
 
-  if (isLoading || !isChecked) {
-    return null; 
-  }
-
-  if (!isAuthenticated) {
-    return null;
+  if (isLoading && !isAuthenticated) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          fontSize: '2em'
+        }}
+      >
+        Loading...
+      </div>
+    );
   }
 
   return <>{children}</>;
