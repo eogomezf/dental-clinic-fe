@@ -1,4 +1,3 @@
-import { fetchAPI } from '@/utils/api';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
@@ -18,13 +17,19 @@ export async function GET() {
   }
 
   try {
-    const isAuthResponse = await fetchAPI('/isAuth', 'GET', undefined, {
-      'x-access-token': jwtToken
-    });
+    const isAuthResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/isAuth`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': jwtToken
+        },
+        credentials: 'include'
+      }
+    );
 
-    console.log({ isAuthResponse });
-
-    if (isAuthResponse.auth) {
+    if (isAuthResponse.ok) {
       const userData = await isAuthResponse.json();
       return NextResponse.json(
         {
