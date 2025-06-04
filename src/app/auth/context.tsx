@@ -7,6 +7,7 @@ import {
   useCallback
 } from 'react';
 import { useRouter } from 'next/navigation';
+import { logoutAction } from '@/app/login/server-actions';
 
 type UserProfile = {
   id: string;
@@ -60,16 +61,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     try {
-      // TODO: implement this ROUTE HANDLER
-      const response = await fetch('/api/auth/logout', { method: 'POST' });
-
-      if (response.ok) {
-        setUser(null);
-        router.replace('/');
-      } else {
-        console.error('Failed to logout on server.');
-        setUser(null);
-      }
+      await logoutAction();
+      setUser(null);
+      router.replace('/');
+      // clear any cached data
+      router.refresh();
     } catch (error) {
       console.error('Error during logout:', error);
       setUser(null);
