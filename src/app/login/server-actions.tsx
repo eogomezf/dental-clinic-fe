@@ -6,16 +6,18 @@ import { fetchAPI } from '@/utils/api';
 export async function loginAction(formData: FormData) {
   const email = formData.get('email');
   const password = formData.get('password');
+  let response;
 
   try {
-    const response = await fetchAPI('/auth/signin', 'POST', {
-      email,
-      password
-    });
+    response = await fetchAPI('/auth/signin', 'POST', { email, password });
+  } catch (error) {
+    console.error('Login failed:', error);
+    return redirect('/?error=login_failed');
+  }
 
-    if (!response) {
-      redirect('/');
-    }
+  if (!response) {
+    return redirect('/?error=no_response');
+  }
 
     const cookie = await cookies();
     cookie.set('jwt_token', response.token, {
@@ -26,11 +28,8 @@ export async function loginAction(formData: FormData) {
       sameSite: 'lax'
     });
 
-    redirect('/appointments');
-  } catch (error) {
-    console.error('Login failed:', error);
+    return redirect('/appointments');
   }
-}
 
 export async function logoutAction() {
   const cookieStore = await cookies();
