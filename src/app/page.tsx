@@ -1,4 +1,3 @@
-'use client';
 import Image from 'next/image';
 import React from 'react';
 import {
@@ -7,70 +6,11 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Container,
+  Container
 } from '@mui/material';
 import FormsWrapper from './components/Forms/FormsWrapper';
 
 export default function Home() {
-
-  const [showLogin, setShowLogin] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [apiError, setApiError] = useState('');
-  const router = useRouter();
-
-  const validateForm = () => {
-    let isValid = true;
-    setEmailError('');
-    setPasswordError('');
-
-    if (!email) {
-      setEmailError('Email is required');
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setEmailError('Invalid email format');
-      isValid = false;
-    }
-
-    if (!password) {
-      setPasswordError('Password is required');
-      isValid = false;
-    }
-
-    return isValid;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setApiError('');
-
-    if (!validateForm()) {
-      return;
-    }
-
-    try {
-      const { data } = await axios.post('http://localhost:4000/auth/signin', {
-        email,
-        password,
-      });
-      document.cookie = `token=${data.token}; path=/`;
-      document.cookie = `userId=${data.user._id}; path=/`;
-      document.cookie = `role=${data.user.role}; path=/`;
-      
-      const appointmentsRes = await axios.get('http://localhost:4000/appointment', {
-        headers: {
-          'x-access-token': data.token,
-        },
-      });
-  
-      console.log('Appointments:', appointmentsRes.data); 
-    } catch (error) {
-      setApiError(error.response?.data?.message || 'Sign-in failed');
-    }
-  };
-
   return (
     <Container className="flex flex-col items-center h-screen justify-center min-h-screen border-2">
       <Stack
@@ -88,7 +28,7 @@ export default function Home() {
             className="transition-all duration-500 ease-in-out object-cover lg:opacity-100 md:opacity-50 sm:opacity-30 opacity-0 lg:translate-x-0 md:translate-x-[-50%] sm:translate-x-[-100%]"
             style={{
               maxWidth: '100%',
-              maxHeight: '100%',
+              maxHeight: '100%'
             }}
           />
         </Box>
@@ -102,14 +42,14 @@ export default function Home() {
           sx={{
             backgroundImage: {
               sm: 'url(/dentora-pro-login-screen-02.png)',
-              md: 'none',
+              md: 'none'
             },
             backgroundColor: {
               sm: 'transparent',
-              md: 'white',
+              md: 'white'
             },
             backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundPosition: 'center'
           }}
         >
           <FormsWrapper />
@@ -133,11 +73,11 @@ export default function Home() {
               fontFamily: 'var(--font-inter-ui)',
               fontSize: '0.875rem',
               fontWeight: 400,
-              color: '#fff',
+              color: '#fff'
             }}
           >
-            Copyright © {new Date().getFullYear()} Dentora Pro.
-            Proudly created by
+            Copyright © {new Date().getFullYear()} Dentora Pro. Proudly created
+            by
             <a
               className="pl- flex items-center gap-2 hover:text-[#3CA687] hover:underline hover:underline-offset-4"
               href="https://codecrafterslabs.com/"
