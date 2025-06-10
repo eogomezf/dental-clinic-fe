@@ -1,12 +1,15 @@
 import React from "react";
 import AppointmentsList from "./AppointmentsList";
-import { appointments } from "@/app/data/appointments-data";
+//import { appointments } from "@/app/data/appointments-data";
 import NavBar from "./NavBar";
 import Container from "@mui/material/Container";
 
 //import { getAppointments } from "@/app/data/appointments-data";
 
-export default function page() {
+export default async function page() {
+  const response = await fetch("http://localhost:3001/api/appointments");
+  const appointments = await response.json();
+
   return (
     <>
       <NavBar />
