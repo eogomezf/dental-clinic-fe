@@ -41,22 +41,6 @@ const FormsWrapper: React.FC = () => {
     console.log('Sign Up:', values);
   };
 
-  if (isLoading) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-          fontSize: '2em'
-        }}
-      >
-        Checking...
-      </div>
-    );
-  }
-
   return (
     <Box
       sx={{
