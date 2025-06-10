@@ -5,8 +5,6 @@ import AppointmentsList from "./AppointmentsList";
 import NavBar from "./NavBar";
 import Container from "@mui/material/Container";
 
-//import { getAppointments } from "@/app/data/appointments-data";
-
 const API_BASE = "http://localhost:3001/api/appointments";
 
 export const getItems = async () => {
