@@ -1,47 +1,48 @@
-'use client';
-import { Box, Typography, Button } from '@mui/material';
-import Image from 'next/image';
-import { useAuth } from '../auth/context';
+import AppointmentsList from './AppointmentsList';
+import NavBar from './NavBar';
+import Container from '@mui/material/Container';
+import { cookies } from 'next/headers';
 
-export default function AppointmentsPage() {
-  const { logout } = useAuth();
+export default async function AppointmentsPage() {
+  const cookieStore = await cookies();
+  const jwtToken = cookieStore.get('jwt_token')?.value;
+  let appointments = [];
+  
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/appointment`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': jwtToken || ''
+        },
+        cache: 'no-store'
+      }
+    );
 
-  const handleLogout = async () => {
-    logout();
-  };
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `Failed to fetch appointments: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    appointments = data.appointments;
+  } catch (error: any) {
+    console.error('Appointments fetch error:', error.message);
+  }
 
   return (
-    <Box
-      sx={{
-        pt: 6,
-        textAlign: 'center',
-        minHeight: '100vh',
-        position: 'relative'
-      }}
-    >
-      <Typography variant="h2" gutterBottom>
-        Appointments Page
-      </Typography>
-      <Box sx={{ mt: 4, position: 'relative', width: '100%', height: 300 }}>
-        <Image
-          src="/site-under-construction.png"
-          alt="Under construction sign with traffic cones and a hard hat."
-          fill
-          style={{ objectFit: 'contain' }}
-          priority
-        />
-      </Box>
-      <Typography variant="body1" sx={{ mt: 2 }}>
-        Please check back later.
-      </Typography>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={handleLogout}
-        sx={{ mt: 4, py: 1.5, px: 4 }}
-      >
-        Log Out
-      </Button>
-    </Box>
+    <>
+      <NavBar />
+      <Container className="flex flex-col items-center justify-center mt-15 py-4">
+        <h2 className="text-2xl font-bold mb-4">Dentora Pro Appointments</h2>
+        <p className="text-gray-600 mb-8">
+          Here are your upcoming appointments. Click on an appointment to view
+          more details or to edit it.
+        </p>
+        <AppointmentsList appointments={appointments} />
+      </Container>
+    </>
   );
 }
