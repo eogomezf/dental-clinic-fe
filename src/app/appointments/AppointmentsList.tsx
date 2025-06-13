@@ -15,45 +15,46 @@ import Delete from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
 import { fetchAppointments, deleteAppointment } from "../services/appointments";
 import { Appointment, AppointmentsListProps } from "../models/appointments";
+import { formatDateRange } from "../utils/dateHelpers";
 
-function DateNewFormat(
-  dateString1: string | Date,
-  dateString2: string | Date
-): string {
-  let firstDate: Date;
-  if (typeof dateString1 === "string") {
-    firstDate = new Date(Date.parse(dateString1));
-  } else {
-    firstDate = dateString1;
-  }
+// function DateNewFormat(
+//   dateString1: string | Date,
+//   dateString2: string | Date
+// ): string {
+//   let firstDate: Date;
+//   if (typeof dateString1 === "string") {
+//     firstDate = new Date(Date.parse(dateString1));
+//   } else {
+//     firstDate = dateString1;
+//   }
 
-  let secondDate: Date;
+//   let secondDate: Date;
 
-  if (typeof dateString2 === "string") {
-    secondDate = new Date(Date.parse(dateString2));
-  } else {
-    secondDate = dateString2;
-  }
+//   if (typeof dateString2 === "string") {
+//     secondDate = new Date(Date.parse(dateString2));
+//   } else {
+//     secondDate = dateString2;
+//   }
 
-  const result =
-    firstDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }) +
-    " " +
-    firstDate.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }) +
-    " to " +
-    secondDate.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+//   const result =
+//     firstDate.toLocaleDateString("en-US", {
+//       year: "numeric",
+//       month: "long",
+//       day: "numeric",
+//     }) +
+//     " " +
+//     firstDate.toLocaleTimeString("en-US", {
+//       hour: "2-digit",
+//       minute: "2-digit",
+//     }) +
+//     " to " +
+//     secondDate.toLocaleTimeString("en-US", {
+//       hour: "2-digit",
+//       minute: "2-digit",
+//     });
 
-  return result;
-}
+//   return result;
+// }
 
 function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
   const [appointments, setAppointments] =
@@ -111,7 +112,7 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
                     </TableCell>
 
                     <TableCell>{description}</TableCell>
-                    <TableCell>{DateNewFormat(startTime, endTime)}</TableCell>
+                    <TableCell>{formatDateRange(startTime, endTime)}</TableCell>
                     <TableCell align="right">
                       <Tooltip title="Edit Appointment">
                         <button className="text-blue-500 hover:underline">
