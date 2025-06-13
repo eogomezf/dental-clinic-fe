@@ -7,7 +7,14 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 
-import { Box, Tooltip } from "@mui/material";
+import {
+  Box,
+  Tooltip,
+  Stack,
+  Typography,
+  ButtonGroup,
+  Button,
+} from "@mui/material";
 import Container from "@mui/material/Container";
 import Sheet from "@mui/joy/Sheet";
 import EditCalendar from "@mui/icons-material/EditCalendar";
@@ -15,46 +22,7 @@ import Delete from "@mui/icons-material/Delete";
 import Swal from "sweetalert2";
 import { fetchAppointments, deleteAppointment } from "../services/appointments";
 import { Appointment, AppointmentsListProps } from "../models/appointments";
-import { formatDateRange } from "../utils/dateHelpers";
-
-// function DateNewFormat(
-//   dateString1: string | Date,
-//   dateString2: string | Date
-// ): string {
-//   let firstDate: Date;
-//   if (typeof dateString1 === "string") {
-//     firstDate = new Date(Date.parse(dateString1));
-//   } else {
-//     firstDate = dateString1;
-//   }
-
-//   let secondDate: Date;
-
-//   if (typeof dateString2 === "string") {
-//     secondDate = new Date(Date.parse(dateString2));
-//   } else {
-//     secondDate = dateString2;
-//   }
-
-//   const result =
-//     firstDate.toLocaleDateString("en-US", {
-//       year: "numeric",
-//       month: "long",
-//       day: "numeric",
-//     }) +
-//     " " +
-//     firstDate.toLocaleTimeString("en-US", {
-//       hour: "2-digit",
-//       minute: "2-digit",
-//     }) +
-//     " to " +
-//     secondDate.toLocaleTimeString("en-US", {
-//       hour: "2-digit",
-//       minute: "2-digit",
-//     });
-
-//   return result;
-// }
+import { formatDateRange, getAppointmentStatus } from "../utils/dateHelpers";
 
 function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
   const [appointments, setAppointments] =
@@ -78,7 +46,7 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
     }
   }
 
-  const headers = ["Title", "Description", "Date", "Actions"];
+  const headers = ["Title", "Description", "Date", "Status", "Actions"];
   return (
     <Container className="flex flex-col items-center   justify-center py-4 ">
       <Box>
@@ -110,36 +78,64 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
                     <TableCell component="th" scope="appointment">
                       {title}
                     </TableCell>
-
                     <TableCell>{description}</TableCell>
                     <TableCell>{formatDateRange(startTime, endTime)}</TableCell>
+                    <TableCell>
+                      {(() => {
+                        const { label, color, Icon } =
+                          getAppointmentStatus(startTime);
+                        return (
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            spacing={1}
+                          >
+                            <Icon color={color} fontSize="small" />
+                            <Typography color={color} fontSize="0.9rem">
+                              {label}
+                            </Typography>
+                          </Stack>
+                        );
+                      })()}
+                    </TableCell>
                     <TableCell align="right">
-                      <Tooltip title="Edit Appointment">
-                        <button className="text-blue-500 hover:underline">
-                          <EditCalendar sx={{ color: "green" }} />
-                        </button>
-                      </Tooltip>
-                      <Tooltip title="Delete Appointment">
-                        <button
-                          className="text-red-500 hover:underline ml-4"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            Swal.fire({
-                              title: "Are you sure?",
-                              icon: "warning",
-                              showCancelButton: true,
-                              confirmButtonText: "Yes, delete it!",
-                              cancelButtonText: "No, cancel!",
-                            }).then((result) => {
-                              if (result.isConfirmed) {
-                                removeAppointment(_id);
-                              }
-                            });
-                          }}
+                      <Stack spacing={2}>
+                        <ButtonGroup
+                          variant="text"
+                          aria-label="Appointment actions"
                         >
-                          <Delete />
-                        </button>
-                      </Tooltip>
+                          <Tooltip title="Edit Appointment">
+                            <Button
+                              onClick={() => console.log("Edit clicked")}
+                              color="primary"
+                            >
+                              <EditCalendar />
+                            </Button>
+                          </Tooltip>
+
+                          <Tooltip title="Delete Appointment">
+                            <Button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                Swal.fire({
+                                  title: "Are you sure?",
+                                  icon: "warning",
+                                  showCancelButton: true,
+                                  confirmButtonText: "Yes, delete it!",
+                                  cancelButtonText: "No, cancel!",
+                                }).then((result) => {
+                                  if (result.isConfirmed) {
+                                    removeAppointment(_id);
+                                  }
+                                });
+                              }}
+                              color="error"
+                            >
+                              <Delete />
+                            </Button>
+                          </Tooltip>
+                        </ButtonGroup>
+                      </Stack>
                     </TableCell>
                   </TableRow>
                 )

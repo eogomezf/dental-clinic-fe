@@ -9,3 +9,9 @@ export interface Appointment {
 export interface AppointmentsListProps {
   appointmentsList: Appointment[];
 }
+
+export type AppointmentStatus = {
+  label: string;
+  color: "error" | "warning" | "success";
+  Icon: React.ElementType;
+};

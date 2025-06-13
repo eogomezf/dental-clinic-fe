@@ -3,10 +3,11 @@ import AppointmentsList from "./AppointmentsList";
 import NavBar from "./NavBar";
 import Container from "@mui/material/Container";
 import { Typography } from "@mui/material";
-import { fetchAppointments } from "../services/appointments";
 
 export default async function page() {
-  const appointments = await fetchAppointments();
+  const response = await fetch("http://localhost:3001/api/appointments");
+  const appointments = await response.json();
+
   return (
     <>
       <NavBar />
