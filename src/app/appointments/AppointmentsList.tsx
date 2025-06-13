@@ -1,6 +1,5 @@
 "use client";
-// import { Appointment } from "@/app/data/appointments-data";
-import * as React from "react";
+import { useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -12,8 +11,10 @@ import { Box, Tooltip } from "@mui/material";
 import Container from "@mui/material/Container";
 import Sheet from "@mui/joy/Sheet";
 import EditCalendar from "@mui/icons-material/EditCalendar";
-import Delete from "@mui/icons-material/Delete"; // Uncomment if you have a delete icon
-// import { appointments } from "@/app/data/appointments-data";
+import Delete from "@mui/icons-material/Delete";
+import Swal from "sweetalert2";
+import { fetchAppointments, deleteAppointment } from "../services/appointments";
+import { Appointment, AppointmentsListProps } from "../models/appointments";
 
 function DateNewFormat(
   dateString1: string | Date,
@@ -54,48 +55,29 @@ function DateNewFormat(
   return result;
 }
 
-interface Appointment {
-  _id: string;
-  title: string;
-  description: string;
-  startTime: string | Date;
-  endTime: string | Date;
-}
+function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
+  const [appointments, setAppointments] =
+    useState<Appointment[]>(appointmentsList);
 
-interface AppointmentsListProps {
-  appointments: Appointment[];
-}
-
-function AppointmentsList({ appointments }: AppointmentsListProps) {
   async function removeAppointment(appointmentId: string) {
+    if (!appointmentId) {
+      console.error("No appointment ID provided for deletion.");
+      return;
+    }
     try {
-      const response = await fetch(
-        `http://localhost:3001/api/appointments/${appointmentId}`,
-        {
-          method: "DELETE",
-          // body: JSON.stringify({
-          //   appointmentId,
-          // }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      await deleteAppointment(appointmentId);
 
-      const result = await response;
-      if (!result.ok) {
-        console.error("Failed to delete appointment:", result.statusText);
-        return;
-      }
+      const updatedAppointments = await fetchAppointments();
 
-      const updatedAppointments = await result.json();
-      console.log("Updated Appointments:", updatedAppointments);
-      // setAppointments(updatedAppointments);
+      setAppointments(updatedAppointments);
+      Swal.fire("Deleted!", "The item has been deleted.", "success");
     } catch (error) {
-      console.error("Error deleting appointment:", error);
+      Swal.fire("Error", "Error deleting appointment.", "error");
+      console.error("Error deleting appointment", error);
     }
   }
 
+  const headers = ["Title", "Description", "Date", "Actions"];
   return (
     <Container className="flex flex-col items-center   justify-center py-4 ">
       <Box>
@@ -107,46 +89,60 @@ function AppointmentsList({ appointments }: AppointmentsListProps) {
           >
             <TableHead>
               <TableRow>
-                <TableCell>Title </TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell align="center">Actions</TableCell>
+                {headers.map((header, index) => (
+                  <TableCell
+                    key={header}
+                    align={index === headers.length - 1 ? "center" : "left"}
+                  >
+                    {header}
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {appointments.map((appointment) => (
-                <TableRow
-                  key={appointment._id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="appointment">
-                    {appointment.title}
-                  </TableCell>
+              {appointments.map(
+                ({ _id, title, description, startTime, endTime }) => (
+                  <TableRow
+                    key={_id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="appointment">
+                      {title}
+                    </TableCell>
 
-                  <TableCell>{appointment.description}</TableCell>
-                  <TableCell>
-                    {DateNewFormat(appointment.startTime, appointment.endTime)}
-                  </TableCell>
-                  <TableCell align="right">
-                    <Tooltip title="Edit Appointment">
-                      <button className="text-blue-500 hover:underline">
-                        <EditCalendar sx={{ color: "green" }} />
-                      </button>
-                    </Tooltip>
-                    <Tooltip title="Delete Appointment">
-                      <button
-                        className="text-red-500 hover:underline ml-4"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          removeAppointment(appointment._id);
-                        }}
-                      >
-                        <Delete />
-                      </button>
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    <TableCell>{description}</TableCell>
+                    <TableCell>{DateNewFormat(startTime, endTime)}</TableCell>
+                    <TableCell align="right">
+                      <Tooltip title="Edit Appointment">
+                        <button className="text-blue-500 hover:underline">
+                          <EditCalendar sx={{ color: "green" }} />
+                        </button>
+                      </Tooltip>
+                      <Tooltip title="Delete Appointment">
+                        <button
+                          className="text-red-500 hover:underline ml-4"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            Swal.fire({
+                              title: "Are you sure?",
+                              icon: "warning",
+                              showCancelButton: true,
+                              confirmButtonText: "Yes, delete it!",
+                              cancelButtonText: "No, cancel!",
+                            }).then((result) => {
+                              if (result.isConfirmed) {
+                                removeAppointment(_id);
+                              }
+                            });
+                          }}
+                        >
+                          <Delete />
+                        </button>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                )
+              )}
             </TableBody>
           </Table>
         </Sheet>
