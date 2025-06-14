@@ -2,10 +2,9 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { fetchAPI } from '@/utils/api';
+import { SignInFormValues } from '../components/Forms/Forms.types';
 
-export async function loginAction(formData: FormData) {
-  const email = formData.get('email');
-  const password = formData.get('password');
+export async function loginAction({email, password}: SignInFormValues) {
   let response;
 
   try {
