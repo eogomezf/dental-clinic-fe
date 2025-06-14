@@ -24,16 +24,12 @@ const FormsWrapper: React.FC = () => {
 
   const handleSignIn = async (values: SignInFormValues) => {
     setError(null);
-    const formData = new FormData();
-    formData.append('email', values.email);
-    formData.append('password', values.password);
 
     try {
-      await loginAction(formData);
-
+      await loginAction(values);
       router.replace('/appointments');
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
