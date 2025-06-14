@@ -126,7 +126,7 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}></Box>
           <Box sx={{ flexGrow: 0 }}>
             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <Avatar alt="Elvis Gomez" src="/static/images/avatar/2.jpg" />
+              <Avatar alt="Elvis Gomez" src="/avatar.jpg" />
             </IconButton>
 
             <Menu

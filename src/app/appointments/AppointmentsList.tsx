@@ -154,7 +154,7 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
                             onClick={(e) => {
                               e.preventDefault();
                               Swal.fire({
-                                title: "Are you sure?",
+                                title: `Are you sure to delete ${title}?`,
                                 icon: "warning",
                                 showCancelButton: true,
                                 confirmButtonText: "Yes, delete it!",
