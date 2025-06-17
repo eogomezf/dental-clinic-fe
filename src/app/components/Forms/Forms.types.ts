@@ -7,7 +7,7 @@ export type SignUpFormValues = {
     firstName: string;
     lastName: string;
     address: string;
-    phone: number | null;
+    phone: string;
     email: string;
     password: string;
     confirmPassword: string;
@@ -20,4 +20,5 @@ export interface SignInFormProps {
 
 export interface SignUpFormProps {
     onSubmit: (values: SignUpFormValues) => void;
+    isSubmitting:boolean;
 }
