@@ -6,14 +6,14 @@ import { Button, Box, Stack } from '@mui/material';
 import { CustomTextField } from './CustomTextField';
 import { useRouter } from 'next/navigation';
 
-const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit }) => {
+const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit}) => {
   const router = useRouter();
 
   const initialValues: SignUpFormValues = {
     firstName: '',
     lastName: '',
     address: '',
-    phone: null,
+    phone: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -44,8 +44,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit }) => {
               p: 3,
             }}
           >
-            
-        
             <Stack direction="row" spacing={2}>
               <CustomTextField 
               name="firstName" 
@@ -98,4 +96,4 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit }) => {
   );
 };
 
-export default SignUpForm; 
+export default SignUpForm;
