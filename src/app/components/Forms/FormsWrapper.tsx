@@ -5,11 +5,11 @@ import { useAuth } from '../../auth/context';
 import FormsTab from './FormsTab';
 import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
-import type { SignInFormValues, SignUpFormValues } from './Forms.types';
+import { SignInFormValues, SignUpFormValues } from './Forms.types';
 import { Box, Paper, Typography } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { loginAction } from '@/app/action/actions';
-import { signupAction } from '@/app/action/signupActions';
+import { signupAction } from '@/app/action/sigupActions';
 
 const FormsWrapper: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -19,7 +19,7 @@ const FormsWrapper: React.FC = () => {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.replace('/appointments');
+      router.replace('/');
     }
   }, [isAuthenticated, isLoading, router]);
 
@@ -30,9 +30,9 @@ const FormsWrapper: React.FC = () => {
     formData.append('password', values.password);
 
     try {
-      await loginAction(formData);
+      await loginAction(values);
 
-      router.replace('/');
+      router.replace('/appointmentsList');
     } catch (err) {
       console.error(err);
     }
@@ -43,7 +43,7 @@ const FormsWrapper: React.FC = () => {
     try {
       await signupAction(values);
 
-      router.replace('/appointments');
+      router.replace('/appointmentsList');
     } catch (err) {
       console.log(err);
     }
@@ -117,7 +117,7 @@ const FormsWrapper: React.FC = () => {
           {activeTab === 0 ? (
             <SignInForm onSubmit={handleSignIn} isSubmitting={false}/>
           ) : (
-            <SignUpForm onSubmit={handleSignUp} />
+            <SignUpForm onSubmit={handleSignUp} isSubmitting={false}/>
           )}
         </FormsTab>
       </Box>
