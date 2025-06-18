@@ -17,12 +17,19 @@ import {
   Button,
   TableFooter,
   TablePagination,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Dialog,
+  useMediaQuery,
+  useTheme,
+  Alert,
 } from "@mui/material";
 import Container from "@mui/material/Container";
 import Sheet from "@mui/joy/Sheet";
 import EditCalendar from "@mui/icons-material/EditCalendar";
 import Delete from "@mui/icons-material/Delete";
-import Swal from "sweetalert2";
+//import Swal from "sweetalert2";
 import { fetchAppointments, deleteAppointment } from "../services/appointments";
 import { Appointment, AppointmentsListProps } from "../models/appointments";
 import { formatDateRange, getAppointmentStatus } from "../utils/dateHelpers";
@@ -79,22 +86,58 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
     setPage(0);
   };
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const handleSnackbarClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason
+  ) => {
+    if (reason === "clickaway") return;
+    setSnackbarOpen(false);
+  };
+
+  const [snackbarSeverity, setSnackbarSeverity] = useState<
+    "success" | "error" | "info" | "warning"
+  >("success");
+
   async function removeAppointment(appointmentId: string) {
-    if (!appointmentId) {
-      return;
-    }
+    if (!appointmentId) return;
+
     try {
       await deleteAppointment(appointmentId);
-
       const updatedAppointments = await fetchAppointments();
-
       setAppointments(updatedAppointments);
-      Swal.fire("Deleted!", "The item has been deleted.", "success");
+
+      setSnackbarMessage("The item has been deleted");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
     } catch (error) {
-      Swal.fire("Error", "Error deleting appointment.", "error");
-      console.error("Error deleting appointment", error);
+      setSnackbarMessage(`${error} - The item could not be deleted`);
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   }
+
+  const [openModal, setOpenModal] = useState(false);
+
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<Appointment | null>(null);
+
+  const handleOpenModal = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setOpenModal(true);
+  };
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handleConfirm = (appointmentId: string) => {
+    removeAppointment(appointmentId);
+    setOpenModal(false);
+  };
 
   const headers = ["Title", "Description", "Date", "Status", "Actions"];
   return (
@@ -158,8 +201,12 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
                         <Snackbar
                           message="Not implemented"
                           open={open}
-                          autoHideDuration={3000}
+                          autoHideDuration={2000}
                           onClose={handleClose}
+                          anchorOrigin={{
+                            vertical: "top",
+                            horizontal: "right",
+                          }}
                         />
                         <Tooltip title="Edit Appointment">
                           <Button onClick={handleClick} color="primary">
@@ -169,20 +216,15 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
 
                         <Tooltip title="Delete Appointment">
                           <Button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              Swal.fire({
-                                title: `Are you sure to delete ${title}?`,
-                                icon: "warning",
-                                showCancelButton: true,
-                                confirmButtonText: "Yes, delete it!",
-                                cancelButtonText: "No, cancel!",
-                              }).then((result) => {
-                                if (result.isConfirmed) {
-                                  removeAppointment(_id);
-                                }
-                              });
-                            }}
+                            onClick={() =>
+                              handleOpenModal({
+                                _id,
+                                title,
+                                description,
+                                startTime,
+                                endTime,
+                              })
+                            }
                             color="error"
                           >
                             <Delete />
@@ -224,6 +266,50 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
           </Table>
         </Sheet>
       </Box>
+      <Dialog
+        fullScreen={fullScreen}
+        open={openModal}
+        onClose={handleCloseModal}
+      >
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete the {selectedAppointment?.title}{" "}
+            appointment?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              if (selectedAppointment) {
+                handleConfirm(selectedAppointment._id);
+              }
+            }}
+            color="error"
+            variant="contained"
+          >
+            Yes, delete it
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        message={snackbarMessage}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

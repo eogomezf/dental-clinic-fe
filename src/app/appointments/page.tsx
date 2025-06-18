@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import AppointmentsList from "./AppointmentsList";
 import NavBar from "./NavBar";
