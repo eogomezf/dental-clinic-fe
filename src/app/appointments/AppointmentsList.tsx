@@ -6,6 +6,7 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 
 import {
   Box,
@@ -37,13 +38,28 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
+  const [open, setOpen] = useState(false);
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
   const [appointments, setAppointments] =
     useState<Appointment[]>(appointmentsList);
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0
       ? Math.max(0, (1 + page) * rowsPerPage - appointmentsList.length)
@@ -65,7 +81,6 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
 
   async function removeAppointment(appointmentId: string) {
     if (!appointmentId) {
-      console.error("No appointment ID provided for deletion.");
       return;
     }
     try {
@@ -140,11 +155,14 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
                         variant="text"
                         aria-label="Appointment actions"
                       >
+                        <Snackbar
+                          message="Not implemented"
+                          open={open}
+                          autoHideDuration={3000}
+                          onClose={handleClose}
+                        />
                         <Tooltip title="Edit Appointment">
-                          <Button
-                            onClick={() => console.log("Edit clicked")}
-                            color="primary"
-                          >
+                          <Button onClick={handleClick} color="primary">
                             <EditCalendar />
                           </Button>
                         </Tooltip>

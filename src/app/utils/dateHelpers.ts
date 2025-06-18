@@ -67,14 +67,14 @@ export function getAppointmentStatus(
 
   if (diffDays <= 1) {
     return {
-      label: "Near",
+      label: "Almost Due",
       color: "warning",
       Icon: WarningAmber,
     };
   }
 
   return {
-    label: "Process",
+    label: "In Progress",
     color: "success",
     Icon: CheckCircle,
   };
