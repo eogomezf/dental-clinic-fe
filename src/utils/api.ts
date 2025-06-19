@@ -1,4 +1,4 @@
-export type HTTPMethod =
+export type HttpMethods =
   | "GET"
   | "POST"
   | "PUT"
@@ -6,11 +6,11 @@ export type HTTPMethod =
   | "PATCH"
   | "OPTIONS"
   | "HEAD";
-const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export const fetchAPI = async (
   endpoint: string,
-  method: HTTPMethod,
+  method: HttpMethods,
   body?: object,
   headers: Record<string, string> = {}
 ) => {
@@ -27,9 +27,8 @@ export const fetchAPI = async (
     credentials: "include",
   });
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Request failed");
+  if (!response) {
+    throw new Error("Request failed", response);
   }
 
   return response.json();
