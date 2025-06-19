@@ -1,18 +1,15 @@
-import Editar from "../../components/Forms/FormEditAppointment";
+import EditarFrm from "../../components/Forms/FormEditAppointment";
+import { BE_URL } from "@/lib/config";
 
 async function Editpage({ params }: { params: { id: string } }) {
   const { id } = await params;
-  const response = await fetch(`http://localhost:3001/api/appointments/${id}`);
+  const response = await fetch(`${BE_URL}/${id}`);
   const appointment = await response.json();
 
-  if (!appointment) {
-    // return <NotFound />;
-    console.log("no encontrado");
-  }
-
+  
   return (
     <div>
-      <Editar appointment={appointment} />
+      <EditarFrm appointment={appointment} />
     </div>
   );
 }
