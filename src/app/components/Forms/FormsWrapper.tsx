@@ -43,9 +43,10 @@ const FormsWrapper: React.FC = () => {
     try {
       await signupAction(values);
 
-      router.replace('/appointmentsList');
+      router.replace('/AppointmentsList');
     } catch (err) {
-      console.log(err);
+      console.error('Sign Up error',err);
+      setError('Failed to sig up. Please try again');
     }
   };
 
