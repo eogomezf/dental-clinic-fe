@@ -1,19 +1,18 @@
-import React from "react";
-import AppointmentsList from "./AppointmentsList";
-// import { appointments } from "@/app/data/appointments-data";
-
+import { BE_URL } from "@/lib/config";
 import NavBar from "./NavBar";
+import AppointmentsList from "./AppointmentsList";
 import Container from "@mui/material/Container";
 
-const API_BASE = "http://localhost:3001/api/appointments";
-
 export const getItems = async () => {
-  const res = await fetch(API_BASE);
+  const res = await fetch(`${BE_URL}`);
   return res.json();
 };
 
 export default async function page() {
   const appointments = await getItems();
+
+  console.log(appointments);
+
   return (
     <>
       <NavBar />
