@@ -12,12 +12,12 @@ export const SignInSchema = Yup.object().shape({
 
 export const SignUpSchema = Yup.object().shape({
   firstName: Yup.string()
-    .matches(/^[A-Za-zÀ-ÿ\s'-]+$/,'It must contained just letters')
+    .matches(/^[A-Za-zÀ-ÿ\s']+$/,'It must contain just letters')
     .min(2, 'Too Short!')
     .max(50, 'Too Long!')
     .required('Name is Required'),
   lastName: Yup.string()
-    .matches(/^[A-Za-zÀ-ÿ\s'-]+$/,'It must contained just letters')
+    .matches(/^[A-Za-zÀ-ÿ\s']+$/,'It must contain just letters')
     .min(2, 'Too Short!')
     .max(50, 'Too Long!')
     .required('Last name is Required'),
