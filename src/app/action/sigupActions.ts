@@ -14,7 +14,6 @@ export const signupAction = async (data: SignUpFormValues) => {
 
     if (!response.ok) {
       const error = await response.json();
-      console.error('Signup failed:', error);
       throw new Error(error.message || 'Signup failed');
     }
 
