@@ -6,12 +6,12 @@ import { Typography } from "@mui/material";
 import { fetchAppointments } from "../services/appointments";
 
 export default async function page() {
-  const appointments = await fetchAppointments();
-
+  const appointmentsFetched = await fetchAppointments();
+  const appointments = appointmentsFetched.appointments || [];
   return (
     <>
       <NavBar />
-      
+
       <Container className="flex flex-col items-center justify-center mt-15 py-4">
         <Typography variant="h5" component="h2" gutterBottom>
           Dentora Pro Appointments
