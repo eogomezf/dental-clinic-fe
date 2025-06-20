@@ -71,9 +71,7 @@ function AppointmentsList({ appointments }: AppointmentsListProps) {
         `http://localhost:3001/api/appointments/${appointmentId}`,
         {
           method: "DELETE",
-          // body: JSON.stringify({
-          //   appointmentId,
-          // }),
+          
           headers: {
             "Content-Type": "application/json",
           },
@@ -87,8 +85,7 @@ function AppointmentsList({ appointments }: AppointmentsListProps) {
       }
 
       const updatedAppointments = await result.json();
-      console.log("Updated Appointments:", updatedAppointments);
-      // setAppointments(updatedAppointments);
+      
     } catch (error) {
       console.error("Error deleting appointment:", error);
     }
