@@ -144,6 +144,7 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
     <Container className="flex flex-col items-center   justify-center py-4 ">
       <Box>
         <Sheet sx={{ height: 450, overflow: "auto" }}>
+
           <Table
             sx={{ minWidth: 1000 }}
             aria-label="table with sticky header"
@@ -310,6 +311,7 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+
     </Container>
   );
 }

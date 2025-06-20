@@ -25,9 +25,11 @@ function ResponsiveAppBar() {
     null
   );
 
+
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -39,6 +41,7 @@ function ResponsiveAppBar() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
 
   return (
     <AppBar position="fixed">
@@ -57,7 +60,6 @@ function ResponsiveAppBar() {
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
-
               fontWeight: 700,
               letterSpacing: ".3rem",
               color: "inherit",
@@ -114,7 +116,6 @@ function ResponsiveAppBar() {
               mr: 2,
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
-
               fontWeight: 700,
               letterSpacing: ".3rem",
               color: "inherit",
@@ -159,4 +160,6 @@ function ResponsiveAppBar() {
     </AppBar>
   );
 }
+
 export default ResponsiveAppBar;
+
