@@ -6,8 +6,8 @@ import { Typography } from "@mui/material";
 import { fetchAppointments } from "../services/appointments";
 
 export default async function page() {
-  const appointments = await fetchAppointments();
-
+  const appointmentsFetched = await fetchAppointments();
+  const appointments = appointmentsFetched.appointments || [];
   return (
     <>
       <NavBar />

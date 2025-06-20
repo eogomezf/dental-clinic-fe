@@ -64,6 +64,8 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
   const [appointments, setAppointments] =
     useState<Appointment[]>(appointmentsList);
 
+  console.log("Appointments:", appointments);
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -105,7 +107,8 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
 
     try {
       await deleteAppointment(appointmentId);
-      const updatedAppointments = await fetchAppointments();
+      const updatedAppointmentsFetched = await fetchAppointments();
+      const updatedAppointments = updatedAppointmentsFetched.appointments || [];
       setAppointments(updatedAppointments);
 
       setSnackbarMessage("The item has been deleted");
@@ -168,9 +171,9 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
                     page * rowsPerPage + rowsPerPage
                   )
                 : appointments
-              ).map(({ _id, title, description, startTime, endTime }) => (
+              ).map(({ id, title, description, startTime, endTime }) => (
                 <TableRow
-                  key={_id}
+                  key={id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell component="th" scope="appointment">
@@ -218,7 +221,7 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
                           <Button
                             onClick={() =>
                               handleOpenModal({
-                                _id,
+                                id,
                                 title,
                                 description,
                                 startTime,
@@ -285,7 +288,7 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
           <Button
             onClick={() => {
               if (selectedAppointment) {
-                handleConfirm(selectedAppointment._id);
+                handleConfirm(selectedAppointment.id);
               }
             }}
             color="error"
