@@ -24,10 +24,18 @@ function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+<<<<<<< HEAD
+=======
+
+>>>>>>> ec6a11c90e649fbddbf15eda698cd17873b426d1
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
+<<<<<<< HEAD
+=======
+
+>>>>>>> ec6a11c90e649fbddbf15eda698cd17873b426d1
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -40,6 +48,10 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> ec6a11c90e649fbddbf15eda698cd17873b426d1
   return (
     <AppBar position="fixed">
       <Container maxWidth="xl">
@@ -157,4 +169,10 @@ function ResponsiveAppBar() {
     </AppBar>
   );
 }
+<<<<<<< HEAD
 export default ResponsiveAppBar;
+=======
+
+export default ResponsiveAppBar;
+
+>>>>>>> ec6a11c90e649fbddbf15eda698cd17873b426d1
