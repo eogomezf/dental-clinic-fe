@@ -6,7 +6,7 @@ export type HttpMethods =
   | 'PATCH'
   | 'OPTIONS'
   | 'HEAD';
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export const fetchAPI = async (
   endpoint: string,
