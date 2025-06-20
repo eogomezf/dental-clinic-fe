@@ -32,7 +32,7 @@ const FormsWrapper: React.FC = () => {
     try {
       await loginAction(values);
 
-      router.replace('/appointmentsList');
+      router.replace('/AppointmentsList');
     } catch (err) {
       console.error(err);
     }
