@@ -34,8 +34,8 @@ const FormsWrapper: React.FC = () => {
   };
 
   const handleSignUp = (values: SignUpFormValues) => {
-    console.log('Sign Up:', values);
-  };
+  console.log("Sign Up:", values);
+ };
 
   return (
     <Box
@@ -112,5 +112,4 @@ const FormsWrapper: React.FC = () => {
     </Box>
   );
 };
-
-export default FormsWrapper;
+ export default FormsWrapper;
