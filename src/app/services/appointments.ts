@@ -1,14 +1,17 @@
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/appointment";
+"use server";
+import { cookies } from "next/headers";
+import { Appointment } from "../models/appointments";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+
+const cookieStore = await cookies();
+const jwtToken = cookieStore.get("jwt_token")?.value;
 
 export async function fetchAppointments() {
   try {
     const response = await fetch(`${BASE_URL}/appointment`, {
       method: "GET",
       headers: {
-        // "Content-Type": "application/json",
-        "x-access-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2ODU1N2U3NDU0MzkyYzVlMGFmZTY2ZjIiLCJuYW1lIjoianVhbml0by5sb3BlekBleGFtcGxlLmNvbSIsImlhdCI6MTc1MDQzMzM5NiwiZXhwIjoxNzUwNDQwNTk2fQ.xwRzDxjeAixTT5Q8TWCTPkNt_ELsrFnCDEiKqQlCZW8",
+        "x-access-token": jwtToken || "",
       },
     });
     return response.json();
@@ -17,13 +20,26 @@ export async function fetchAppointments() {
   }
 }
 
+export async function EditAppointment(id: string, appointment: Appointment) {
+  const response = await fetch(`${BASE_URL}/appointment/${id}`, {
+    method: "PUT",
+    headers: {
+      "x-access-token": jwtToken || "",
+    },
+    body: JSON.stringify(appointment),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Updating appointment failed");
+  }
+  return response.json();
+}
+
 export async function deleteAppointment(id: string) {
-  const response = await fetch(`${BASE_URL}/${id}`, {
+  const response = await fetch(`${BASE_URL}/appointment/${id}`, {
     method: "DELETE",
     headers: {
-      "Content-Type": "application/json",
-      "x-access-token":
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2ODUzOWJhZGMzMGYxNmJjZDZjMjQzY2MiLCJuYW1lIjoiZWx2aXMuZ29tZXouZkBob3RtYWlsLmNvbSIsImlhdCI6MTc1MDMxMDMyMSwiZXhwIjoxNzUwMzE3NTIxfQ.EzAiRAxnc6iQFa4PRuwHMM-3vouQxJ6x24SQp2qkXjI",
+      "x-access-token": jwtToken || "",
     },
   });
   if (!response.ok) {

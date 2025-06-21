@@ -14,8 +14,19 @@ import MenuItem from "@mui/material/MenuItem";
 
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 
+import { useRouter } from "next/navigation";
+import { logoutAction } from "@/app/login/server-actions";
+
 //this data will be from the database
-const settings = ["Juan Perez - Admin", "Logout"];
+type Setting = {
+  label: string;
+  action?: () => void;
+};
+
+const settings: Setting[] = [
+  { label: "Juan Perez - Admin" },
+  { label: "Logout" },
+];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -24,6 +35,9 @@ function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+  const router = useRouter();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -39,6 +53,27 @@ function ResponsiveAppBar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logoutAction();
+      router.push("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setIsLoggingOut(false);
+      handleCloseUserMenu();
+    }
+  };
+
+  const handleMenuItemClick = (setting: Setting) => {
+    if (setting.label === "Logout") {
+      handleLogout();
+    } else {
+      handleCloseUserMenu();
+    }
   };
 
   return (
@@ -145,9 +180,15 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem
+                  key={setting.label}
+                  onClick={() => handleMenuItemClick(setting)}
+                  disabled={setting.label === "Logout" && isLoggingOut}
+                >
                   <Typography sx={{ textAlign: "center" }}>
-                    {setting}
+                    {isLoggingOut && setting.label === "Logout"
+                      ? "Logging out..."
+                      : setting.label}
                   </Typography>
                 </MenuItem>
               ))}

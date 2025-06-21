@@ -29,7 +29,6 @@ import Container from "@mui/material/Container";
 import Sheet from "@mui/joy/Sheet";
 import EditCalendar from "@mui/icons-material/EditCalendar";
 import Delete from "@mui/icons-material/Delete";
-//import Swal from "sweetalert2";
 import { fetchAppointments, deleteAppointment } from "../services/appointments";
 import { Appointment, AppointmentsListProps } from "../models/appointments";
 import { formatDateRange, getAppointmentStatus } from "../utils/dateHelpers";
@@ -260,7 +259,6 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
                   }}
                   onPageChange={handleChangePage}
                   onRowsPerPageChange={handleChangeRowsPerPage}
-                  // ActionsComponent={TablePaginationActions}
                 />
               </TableRow>
             </TableFooter>
