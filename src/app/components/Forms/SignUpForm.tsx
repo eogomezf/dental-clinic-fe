@@ -21,8 +21,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit}) => {
   
   const handleSubmit = async (values: SignUpFormValues) => {
     try {
-      await onSubmit(values);
-      router.push('/AppointmentsList');
+      onSubmit(values);
     } catch (error) {
       console.error('SignUp failed:', error);
     }
