@@ -20,16 +20,16 @@ type UserData = {
 
 export default function ResponsiveAppBar() {
   const [userData, setUserData] = useState<UserData>({
-    fullName: "No name",
-    role: "Role not available",
+    fullName: "",
+    role: "",
   });
 
   React.useEffect(() => {
     getUserInformation().then((data) => {
       if (data) {
         setUserData({
-          fullName: data.fullName ? data.fullName : "No name",
-          role: data.role ? data.role : "Role not available",
+          fullName: data.fullName ? data.fullName : "",
+          role: data.role ? data.role : "",
         });
       }
     });
@@ -106,7 +106,7 @@ export default function ResponsiveAppBar() {
               component="div"
               sx={{ flexGrow: 1, textAlign: "right" }}
             >
-              {userData.role}: {userData.fullName}{" "}
+              {userData.role} {userData.fullName}{" "}
             </Typography>
           </Box>
           <Box sx={{ flexGrow: 0 }}>

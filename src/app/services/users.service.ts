@@ -56,7 +56,7 @@ export async function getUserInformation() {
     return {
       fullName: user.firstName + " " + user.lastName || "Nombre no disponible",
       email: user.email,
-      role: user.role === "user" ? "Patient:" : "Doctor:",
+      role: user.role === "user" ? "Patient" : "Doctor",
       id: user._id,
     };
   } catch (error) {
