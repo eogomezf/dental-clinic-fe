@@ -3,11 +3,23 @@ import AppointmentsList from "./AppointmentsList";
 import NavBar from "./NavBar";
 import Container from "@mui/material/Container";
 import { Typography } from "@mui/material";
-import { fetchAppointments } from "../services/appointments";
+import { fetchAppointments } from "../services/appointments.service";
+import { getUserInformation } from "../services/users.service";
 
 export default async function page() {
   const appointmentsFetched = await fetchAppointments();
   const appointments = appointmentsFetched.appointments || [];
+  const userData = await getUserInformation();
+
+  let filteredAppointments = appointments;
+
+  if (userData && userData.role === "Patient") {
+    filteredAppointments = appointments.filter(
+      (appointment: { user: { _id: string } }) =>
+        appointment.user._id === userData.id
+    );
+  }
+
   return (
     <>
       <NavBar />
@@ -20,7 +32,7 @@ export default async function page() {
           Here are your upcoming appointments. Click on an appointment to edit
           it or to delete it.
         </Typography>
-        <AppointmentsList appointmentsList={appointments} />
+        <AppointmentsList appointmentsList={filteredAppointments} />
       </Container>
     </>
   );
