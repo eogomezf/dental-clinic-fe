@@ -1,129 +1,324 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
+import { styled } from "@mui/material/styles";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { Box, Tooltip } from "@mui/material";
+import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
+
+import {
+  Box,
+  Tooltip,
+  Stack,
+  Typography,
+  ButtonGroup,
+  Button,
+  TableFooter,
+  TablePagination,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Dialog,
+  useMediaQuery,
+  useTheme,
+  Alert,
+} from "@mui/material";
 import Container from "@mui/material/Container";
 import Sheet from "@mui/joy/Sheet";
 import EditCalendar from "@mui/icons-material/EditCalendar";
-import Delete from "@mui/icons-material/Delete"; // Uncomment if you have a delete icon
+import Delete from "@mui/icons-material/Delete";
 
-function DateNewFormat(
-  dateString1: string | Date,
-  dateString2: string | Date
-): string {
-  let firstDate: Date;
-  if (typeof dateString1 === "string") {
-    firstDate = new Date(Date.parse(dateString1));
-  } else {
-    firstDate = dateString1;
-  }
+import {
+  fetchAppointments,
+  deleteAppointment,
+} from "../services/appointments.service";
+import {
+  Appointment,
+  AppointmentsListProps,
+} from "../models/appointments.model";
+import { formatDateRange, getAppointmentStatus } from "../utils/dateHelper";
+import { useRouter } from "next/navigation";
 
-  let secondDate: Date;
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
 
-  if (typeof dateString2 === "string") {
-    secondDate = new Date(Date.parse(dateString2));
-  } else {
-    secondDate = dateString2;
-  }
-
-  const result =
-    firstDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }) +
-    " " +
-    firstDate.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }) +
-    " to " +
-    secondDate.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-  return result;
-}
-
-interface Appointment {
-  _id: string;
-  title: string;
-  description: string;
-  startTime: string | Date;
-  endTime: string | Date;
-}
-
-interface AppointmentsListProps {
-  appointments: Appointment[];
-}
-
-function AppointmentsList({ appointments }: AppointmentsListProps) {
+function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
+
+  const handleClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
+  const [appointments, setAppointments] =
+    useState<Appointment[]>(appointmentsList);
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const emptyRows =
+    page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - appointmentsList.length)
+      : 0;
+
+  const handleChangePage = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const handleSnackbarClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason
+  ) => {
+    if (reason === "clickaway") return;
+    setSnackbarOpen(false);
+  };
+
+  const [snackbarSeverity, setSnackbarSeverity] = useState<
+    "success" | "error" | "info" | "warning"
+  >("success");
+
+  async function removeAppointment(appointmentId: string) {
+    if (!appointmentId) return;
+
+    try {
+      await deleteAppointment(appointmentId);
+      const updatedAppointments = await fetchAppointments();
+      setAppointments(updatedAppointments);
+
+      setSnackbarMessage("The item has been deleted");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+    } catch (error) {
+      setSnackbarMessage(`${error} - The item could not be deleted`);
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  }
+
+  const [openModal, setOpenModal] = useState(false);
+
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<Appointment | null>(null);
+
+  const handleOpenModal = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handleConfirm = (appointmentId: string) => {
+    removeAppointment(appointmentId);
+    setOpenModal(false);
+  };
+
+  const headers = ["Title", "Description", "Date", "Status", "Actions"];
   return (
     <Container className="flex flex-col items-center   justify-center py-4 ">
       <Box>
-        <Sheet sx={{ height: 300, overflow: "auto" }}>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 1000 }} aria-label="simple table">
-              <TableHead>
-                <TableRow sx={{ backgroundColor: "#1976d2", color: "#fff" }}>
-                  <TableCell>Title </TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell>Date</TableCell>
-                  <TableCell align="center">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {appointments.map((appointment) => (
+        <Sheet sx={{ height: 450, overflow: "auto" }}>
+          <Table
+            sx={{ minWidth: 1000 }}
+            aria-label="table with sticky header"
+            stickyHeader
+          >
+            <TableHead>
+              <TableRow>
+                {headers.map((header, index) => (
+                  <StyledTableCell
+                    key={header}
+                    align={index === headers.length - 1 ? "center" : "left"}
+                  >
+                    {header}
+                  </StyledTableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {appointments.map(
+                ({ id, title, description, startTime, endTime }) => (
                   <TableRow
-                    key={appointment.title}
+                    key={id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell component="th" scope="appointment">
-                      {appointment.title}
+                      {title}
                     </TableCell>
-
-                    <TableCell>{appointment.description}</TableCell>
-                    {
-                      <TableCell>
-                        {" "}
-                        {DateNewFormat(
-                          appointment.startTime,
-                          appointment.endTime
-                        )}
-                      </TableCell>
-                    }
+                    <TableCell>{description}</TableCell>
+                    <TableCell>{formatDateRange(startTime, endTime)}</TableCell>
+                    <TableCell>
+                      {(() => {
+                        const { label, color, Icon } =
+                          getAppointmentStatus(startTime);
+                        return (
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            spacing={1}
+                          >
+                            <Icon color={color} fontSize="small" />
+                            <Typography color={color} fontSize="0.9rem">
+                              {label}
+                            </Typography>
+                          </Stack>
+                        );
+                      })()}
+                    </TableCell>
                     <TableCell align="right">
-                      <Tooltip title="Edit Appointment">
-                        <button
-                          className="text-blue-500 hover:underline"
-                          onClick={() => {
-                            router.push("/appointments/" + appointment._id);
-                          }}
+                      <Stack spacing={2}>
+                        <ButtonGroup
+                          variant="text"
+                          aria-label="Appointment actions"
                         >
-                          <EditCalendar sx={{ color: "green" }} />
-                        </button>
-                      </Tooltip>
-                      <Tooltip title="Delete Appointment">
-                        <button className="text-red-500 hover:underline ml-4">
-                          <Delete />
-                        </button>
-                      </Tooltip>
+                          <Snackbar
+                            message="Not implemented"
+                            open={open}
+                            autoHideDuration={2000}
+                            onClose={handleClose}
+                            anchorOrigin={{
+                              vertical: "top",
+                              horizontal: "right",
+                            }}
+                          />
+                          <Tooltip title="Edit Appointment">
+                            <button
+                              className="text-blue-500 hover:underline"
+                              onClick={() => {
+                                router.push("/appointments/" + id);
+                              }}
+                            >
+                              <EditCalendar sx={{ color: "green" }} />
+                            </button>
+                          </Tooltip>
+
+                          <Tooltip title="Delete Appointment">
+                            <Button
+                              onClick={() =>
+                                handleOpenModal({
+                                  id,
+                                  title,
+                                  description,
+                                  startTime,
+                                  endTime,
+                                })
+                              }
+                              color="error"
+                            >
+                              <Delete />
+                            </Button>
+                          </Tooltip>
+                        </ButtonGroup>
+                      </Stack>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                )
+              )}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: 53 * emptyRows }}>
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+                  colSpan={3}
+                  count={appointments.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  slotProps={{
+                    select: {
+                      inputProps: {
+                        "aria-label": "rows per page",
+                      },
+                      native: true,
+                    },
+                  }}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </TableRow>
+            </TableFooter>
+          </Table>
         </Sheet>
       </Box>
+      <Dialog
+        fullScreen={fullScreen}
+        open={openModal}
+        onClose={handleCloseModal}
+      >
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete the {selectedAppointment?.title}{" "}
+            appointment?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              if (selectedAppointment) {
+                handleConfirm(selectedAppointment.id);
+              }
+            }}
+            color="error"
+            variant="contained"
+          >
+            Yes, delete it
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        message={snackbarMessage}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
