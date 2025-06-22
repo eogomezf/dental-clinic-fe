@@ -1,28 +1,40 @@
-import { BE_URL } from "@/lib/config";
-import NavBar from "./NavBar";
-import AppointmentsList from "@/app/appointments/AppointmentsList";
-import Container from "@mui/material/Container";
 
-export const getItems = async () => {
-  const res = await fetch(`${BE_URL}`);
-  return res.json();
-};
+import React from "react";
+import AppointmentsList from "./AppointmentsList";
+import NavBar from "./NavBar";
+import Container from "@mui/material/Container";
+import { Typography } from "@mui/material";
+import { fetchAppointments } from "../services/appointments.service";
+import { getUserInformation } from "../services/users.service";
 
 export default async function page() {
-  const appointments = await getItems();
+  const appointmentsFetched = await fetchAppointments();
+  const appointments = appointmentsFetched.appointments || [];
+  const userData = await getUserInformation();
 
-  console.log(appointments);
+  let filteredAppointments = appointments;
+
+  if (userData && userData.role === "Patient") {
+    filteredAppointments = appointments.filter(
+      (appointment: { user: { _id: string } }) =>
+        appointment.user._id === userData.id
+    );
+  }
+
 
   return (
     <>
       <NavBar />
+
       <Container className="flex flex-col items-center justify-center mt-15 py-4">
-        <h2 className="text-2xl font-bold mb-4">Dentora Pro Appointments</h2>
-        <p className="text-gray-600 mb-8">
-          Here are your upcoming appointments. Click on an appointment to view
-          more details or to edit it.
-        </p>
-        <AppointmentsList appointments={appointments} />
+        <Typography variant="h5" component="h2" gutterBottom>
+          Dentora Pro Appointments
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Here are your upcoming appointments. Click on an appointment to edit
+          it or to delete it.
+        </Typography>
+        <AppointmentsList appointmentsList={filteredAppointments} />
       </Container>
     </>
   );

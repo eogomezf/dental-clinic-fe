@@ -81,6 +81,7 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
     const maxTime = "17:00";
     const msg = "You cannot set this time for";
 
+
     if (field === "startTime") {
       if (
         value < minTime ||
@@ -189,6 +190,7 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
         borderRadius: 2,
         bgcolor: "#ffffee",
         color: "primary",
+
       }}
     >
       <>
