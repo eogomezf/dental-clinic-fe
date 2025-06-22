@@ -1,15 +1,22 @@
-import EditarFrm from "../../components/Forms/FormEditAppointment";
-import { BE_URL } from "@/lib/config";
+import { Appointment } from "@/app/models/appointments.model";
+import FormEditAppointment from "../../components/Forms/FormEditAppointment";
+import { fetchAppointments } from "@/app/services/appointments.service";
 
-async function Editpage({ params }: { params: { id: string } }) {
+async function Editpage({
+  params,
+}: {
+  params: {
+    id: string;
+  };
+}) {
   const { id } = await params;
-  const response = await fetch(`${BE_URL}/${id}`);
-  const appointment = await response.json();
+  const appointmentsFetched = await fetchAppointments();
+  const appointments = appointmentsFetched.appointments || [];
+  const appointment = appointments.find((a: Appointment) => a.id == id);
 
-  
   return (
     <div>
-      <EditarFrm appointment={appointment} />
+      <FormEditAppointment appointment={appointment} />
     </div>
   );
 }
