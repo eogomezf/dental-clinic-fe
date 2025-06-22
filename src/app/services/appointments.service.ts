@@ -1,12 +1,11 @@
 "use server";
 import { cookies } from "next/headers";
-import { Appointment } from "../models/appointments";
+import { Appointment } from "../models/appointments.model";
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
-const cookieStore = await cookies();
-const jwtToken = cookieStore.get("jwt_token")?.value;
-
 export async function fetchAppointments() {
+  const cookieStore = await cookies();
+  const jwtToken = cookieStore.get("jwt_token")?.value;
   try {
     const response = await fetch(`${BASE_URL}/appointment`, {
       method: "GET",
@@ -21,6 +20,8 @@ export async function fetchAppointments() {
 }
 
 export async function EditAppointment(id: string, appointment: Appointment) {
+  const cookieStore = await cookies();
+  const jwtToken = cookieStore.get("jwt_token")?.value;
   const response = await fetch(`${BASE_URL}/appointment/${id}`, {
     method: "PUT",
     headers: {
@@ -36,6 +37,8 @@ export async function EditAppointment(id: string, appointment: Appointment) {
 }
 
 export async function deleteAppointment(id: string) {
+  const cookieStore = await cookies();
+  const jwtToken = cookieStore.get("jwt_token")?.value;
   const response = await fetch(`${BASE_URL}/appointment/${id}`, {
     method: "DELETE",
     headers: {
@@ -53,10 +56,12 @@ export async function createAppointment(appointment: {
   startTime: string | Date;
   endTime: string | Date;
 }) {
+  const cookieStore = await cookies();
+  const jwtToken = cookieStore.get("jwt_token")?.value;
   const response = await fetch(BASE_URL, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "x-access-token": jwtToken || "",
     },
     body: JSON.stringify(appointment),
   });
