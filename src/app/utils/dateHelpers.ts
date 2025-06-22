@@ -1,10 +1,10 @@
 import { CheckCircle, WarningAmber, Cancel } from "@mui/icons-material";
-import { AppointmentStatus } from "../models/appointments";
+import { AppointmentStatus } from "../models/appointments.model";
 
 export function formatDateRange(
   start: string | Date,
   end: string | Date
-): string {
+): { datePart: string; time: string } {
   const firstDate = new Date(start);
   const secondDate = new Date(end);
 
@@ -28,7 +28,10 @@ export function formatDateRange(
     minute: "2-digit",
   });
 
-  return `${datePart} ${startTime} to ${endTime}`;
+  return {
+    datePart,
+    time: `${startTime} to ${endTime}`,
+  };
 }
 
 export function getAppointmentStatus(

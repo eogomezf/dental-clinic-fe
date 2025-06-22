@@ -27,12 +27,18 @@ import {
 } from "@mui/material";
 import Container from "@mui/material/Container";
 import Sheet from "@mui/joy/Sheet";
-import EditCalendar from "@mui/icons-material/EditCalendar";
 import Delete from "@mui/icons-material/Delete";
-//import Swal from "sweetalert2";
-import { fetchAppointments, deleteAppointment } from "../services/appointments";
-import { Appointment, AppointmentsListProps } from "../models/appointments";
+import {
+  fetchAppointments,
+  deleteAppointment,
+} from "../services/appointments.service";
+import {
+  Appointment,
+  AppointmentsListProps,
+} from "../models/appointments.model";
 import { formatDateRange, getAppointmentStatus } from "../utils/dateHelpers";
+import { EditCalendar } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -45,11 +51,8 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
-
-  const handleClick = () => {
-    setOpen(true);
-  };
 
   const handleClose = (
     event: React.SyntheticEvent | Event,
@@ -140,7 +143,14 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
     setOpenModal(false);
   };
 
-  const headers = ["Title", "Description", "Date", "Status", "Actions"];
+  const headers = [
+    "Patinet",
+    "Title",
+    "Description",
+    "Date",
+    "Status",
+    "Actions",
+  ];
   return (
     <Container className="flex flex-col items-center   justify-center py-4 ">
       <Box>
@@ -169,16 +179,32 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
                     page * rowsPerPage + rowsPerPage
                   )
                 : appointments
-              ).map(({ id, title, description, startTime, endTime }) => (
+              ).map(({ id, title, description, startTime, endTime, user }) => (
                 <TableRow
                   key={id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell component="th" scope="appointment">
-                    {title}
+                    {user?.firstName && user?.lastName
+                      ? `${user.firstName} ${user.lastName}`
+                      : "No data"}
                   </TableCell>
+                  <TableCell>{title}</TableCell>
                   <TableCell>{description}</TableCell>
-                  <TableCell>{formatDateRange(startTime, endTime)}</TableCell>
+                  <TableCell>
+                    {(() => {
+                      const { datePart, time } = formatDateRange(
+                        startTime,
+                        endTime
+                      );
+                      return (
+                        <>
+                          <div>{datePart}</div>
+                          <div>{time}</div>
+                        </>
+                      );
+                    })()}
+                  </TableCell>
                   <TableCell>
                     {(() => {
                       const { label, color, Icon } =
@@ -210,9 +236,15 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
                           }}
                         />
                         <Tooltip title="Edit Appointment">
-                          <Button onClick={handleClick} color="primary">
-                            <EditCalendar />
-                          </Button>
+                          <button
+                            className="text-blue-500 hover:underline"
+                            onClick={() => {
+                              router.push("/appointments/" + id);
+                            }}
+                          >
+                            <EditCalendar sx={{ color: "green" }} />
+                          </button>
+                                
                         </Tooltip>
 
                         <Tooltip title="Delete Appointment">
@@ -260,7 +292,6 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
                   }}
                   onPageChange={handleChangePage}
                   onRowsPerPageChange={handleChangeRowsPerPage}
-                  // ActionsComponent={TablePaginationActions}
                 />
               </TableRow>
             </TableFooter>
