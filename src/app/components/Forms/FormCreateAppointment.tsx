@@ -11,6 +11,7 @@ import {
   InputLabel,
   FormControl,
   Typography,
+  FormHelperText,
 } from "@mui/material";
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import SendIcon from "@mui/icons-material/Send";
@@ -19,6 +20,7 @@ import { createAppointment } from "../../services/appointments.service";
 import { AppointmentsListProps } from "@/app/models/appointments.model";
 
 interface FormData {
+  id: string;
   title: string;
   date: string;
   startTime: string;
@@ -32,6 +34,7 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
 
   const formik = useFormik<FormData>({
     initialValues: {
+      id: "",
       title: "",
       date: "",
       startTime: "",
@@ -43,6 +46,7 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
     onSubmit: async (values) => {
       try {
         const payload = {
+          id: values.id,
           title: values.title,
           user: values.user,
           startTime: `${values.date}T${values.startTime}:00`,
@@ -65,6 +69,26 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
     },
   });
 
+  const appointmentTypes = [
+    "Brace Consultation",
+    "Braces Adjustment",
+    "Cavity Filling",
+    "Consultation for Braces",
+    "Dental Cleaning",
+    "Dental Crown Placement",
+    "Emergency Visit",
+    "Follow-up Visit",
+    "Gum Treatment",
+    "Implant Consultation",
+    "Invisalign Evaluation",
+    "Mouthguard Fitting",
+    "Pediatric Cleaning",
+    "Post-op Check",
+    "Root Canal Evaluation",
+    "Tooth Extraction",
+    "Whitening Session",
+  ];
+
   return (
     <Box
       sx={{
@@ -73,29 +97,45 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
         mx: "auto",
         mt: 5,
         pb: 5,
+        border: "solid 1px gray",
         borderRadius: 2,
-        bgcolor: "#fff",
-        color: "#000",
+        bgcolor: "#ffffee",
+        color: "primary",
       }}
     >
       <Typography variant="h5" gutterBottom sx={{ textAlign: "center", pt: 4 }}>
-        Please select from the below options:
+        Create a New Appointment
       </Typography>
       <form onSubmit={formik.handleSubmit}>
         <Box display="flex" justifyContent="center" gap={2} m={5}>
           <Box sx={{ width: "50%" }}>
-            <TextField
+            <FormControl
               fullWidth
               required
-              id="title"
-              label="Enter your title!"
-              name="title"
-              value={formik.values.title}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
               error={formik.touched.title && Boolean(formik.errors.title)}
-              helperText={formik.touched.title && formik.errors.title}
-            />
+            >
+              <InputLabel id="appointment-title-label">
+                Appointment Type
+              </InputLabel>
+              <Select
+                labelId="appointment-title-label"
+                id="title"
+                name="title"
+                value={formik.values.title}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                label="Appointment Type"
+              >
+                {appointmentTypes.map((type) => (
+                  <MenuItem key={type} value={type}>
+                    {type}
+                  </MenuItem>
+                ))}
+              </Select>
+              {formik.touched.title && formik.errors.title && (
+                <FormHelperText>{formik.errors.title}</FormHelperText>
+              )}
+            </FormControl>
           </Box>
           <Box sx={{ width: "50%" }}>
             <TextField

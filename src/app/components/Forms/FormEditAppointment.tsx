@@ -4,7 +4,14 @@ import { useEffect, useState } from "react";
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { TextField } from "@mui/material";
+import {
+  TextField,
+  MenuItem,
+  FormControl,
+  Select,
+  InputLabel,
+  FormHelperText,
+} from "@mui/material";
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import SendIcon from "@mui/icons-material/Send";
 import { Button, Grid, Alert, Snackbar } from "@mui/material";
@@ -149,7 +156,16 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
         validateTime(field, value);
       }
 
-      setForm({ ...form, [field]: e.target.value });
+      setForm({ ...form, [field]: value });
+    };
+
+  const handleSelectChange =
+    (field: keyof typeof form) =>
+    (event: React.ChangeEvent<{ value: unknown }>) => {
+      setForm((prevForm) => ({
+        ...prevForm,
+        [field]: event.target.value as string,
+      }));
     };
 
   const handleUpdate = async () => {
@@ -177,6 +193,26 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
       setSeverity("error");
     }
   };
+
+  const appointmentTypes = [
+    "Brace Consultation",
+    "Braces Adjustment",
+    "Cavity Filling",
+    "Consultation for Braces",
+    "Dental Cleaning",
+    "Dental Crown Placement",
+    "Emergency Visit",
+    "Follow-up Visit",
+    "Gum Treatment",
+    "Implant Consultation",
+    "Invisalign Evaluation",
+    "Mouthguard Fitting",
+    "Pediatric Cleaning",
+    "Post-op Check",
+    "Root Canal Evaluation",
+    "Tooth Extraction",
+    "Whitening Session",
+  ];
 
   return (
     <Box
@@ -209,18 +245,25 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
               : "Editing Appointment"} */}
           </Typography>
           <Box display="flex" justifyContent="center" gap={2} m={5}>
-            <TextField
-              fullWidth
-              required
-              id="title"
-              label="Enter your title!"
-              value={form.title}
-              onChange={handleChange("title")}
-              error={form.title.trim() === ""}
-              helperText={
-                form.title.trim() === "" ? "The title is required" : ""
-              }
-            />
+            <FormControl fullWidth required error={form.title.trim() === ""}>
+              <InputLabel id="title-label">Select your title</InputLabel>
+              <Select
+                labelId="title-label"
+                id="title"
+                value={form.title}
+                onChange={handleSelectChange("title")}
+                label="Select your title"
+              >
+                {appointmentTypes.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
+              {form.title.trim() === "" && (
+                <FormHelperText>The title is required</FormHelperText>
+              )}
+            </FormControl>
             <Grid display="flex" flexDirection={"column"} sx={{ width: "50%" }}>
               <TextField
                 fullWidth
