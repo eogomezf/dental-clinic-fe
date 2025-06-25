@@ -16,17 +16,11 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-<<<<<<< HEAD
     "@fontsource/inter": "^5.2.5",
     "@fontsource/roboto": "^5.2.5",
     "@mui/icons-material": "^7.1.1",
     "@mui/joy": "^5.0.0-beta.52",
     "@mui/material": "^7.1.1",
-=======
-    "@mui/icons-material": "^7.1.0",
-    "@mui/joy": "^5.0.0-beta.52",
-    "@mui/material": "^7.1.0",
->>>>>>> 9e6e7de7e8168ad6ab346262b573abc4664cbe7d
     "@mui/styled-engine-sc": "^7.1.0",
     "@vitejs/plugin-react": "^4.5.0",
     "formik": "^2.4.6",

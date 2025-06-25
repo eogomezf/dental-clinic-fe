@@ -19,15 +19,25 @@ export async function fetchAppointments() {
   }
 }
 
-export async function EditAppointment(id: string, appointment: Appointment) {
+export async function EditAppointment(appointment: Appointment) {
   const cookieStore = await cookies();
   const jwtToken = cookieStore.get("jwt_token")?.value;
-  const response = await fetch(`${BASE_URL}/appointment/${id}`, {
+
+  const appointmentEdited = {
+    ...appointment,
+    user:
+      typeof appointment.user === "object" && appointment.user !== null
+        ? appointment.user._id
+        : appointment.user,
+  };
+
+  const response = await fetch(`${BASE_URL}/appointment/${appointment.id}`, {
     method: "PUT",
     headers: {
+      "Content-Type": "application/json",
       "x-access-token": jwtToken || "",
     },
-    body: JSON.stringify(appointment),
+    body: JSON.stringify(appointmentEdited),
   });
   if (!response.ok) {
     const errorText = await response.text();
@@ -50,6 +60,7 @@ export async function deleteAppointment(id: string) {
     throw new Error(errorText || "Deleting appointment failed");
   }
 }
+
 export async function createAppointment(appointment: {
   title: string;
   description: string;

@@ -140,6 +140,7 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
   const handleChange =
     (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
+
       if (field === "date") {
         validateDate(value);
       }
@@ -155,17 +156,17 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
     const { title, description, date, startTime, endTime } = form;
     const start = new Date(`${date}T${startTime}`);
     const end = new Date(`${date}T${endTime}`);
-    const IdAppointment = appointment.id;
+    // const IdAppointment = appointment.id;
 
     appointment = {
-      id: IdAppointment,
+      ...appointment,
       title,
       description,
       startTime: start,
       endTime: end,
     };
 
-    const res = await EditAppointment(appointment.id, appointment);
+    const res = await EditAppointment(appointment);
 
     if (res.ok) {
       showMessage("The appointment has been updated successfully");
