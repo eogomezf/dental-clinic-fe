@@ -148,17 +148,17 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
     const { title, description, date, startTime, endTime } = form;
     const start = new Date(`${date}T${startTime}`);
     const end = new Date(`${date}T${endTime}`);
-    const IdAppointment = appointment.id;
 
     appointment = {
-      id: IdAppointment,
+      ...appointment,
       title,
       description,
       startTime: start,
       endTime: end,
     };
+    console.log(appointment);
 
-    const res = await EditAppointment(appointment.id, appointment);
+    const res = await EditAppointment(appointment);
 
     if (res.ok) {
       showMessage("The appointment has been updated successfully");
@@ -192,12 +192,13 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
             gutterBottom
             sx={{ textAlign: "center", pt: 4 }}
           >
-            {appointment.user
+            Editing Appointment
+            {/* {appointment.user
               ? "Editing Appointment of " +
                 appointment.user?.firstName +
                 " " +
                 appointment.user?.lastName
-              : "Editing Appointment"}
+              : "Editing Appointment"} */}
           </Typography>
           <Box display="flex" justifyContent="center" gap={2} m={5}>
             <TextField

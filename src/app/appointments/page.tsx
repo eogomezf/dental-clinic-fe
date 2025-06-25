@@ -4,21 +4,25 @@ import NavBar from "./NavBar";
 import Container from "@mui/material/Container";
 import { Typography } from "@mui/material";
 import { fetchAppointments } from "../services/appointments.service";
-import { getUserInformation } from "../services/users.service";
+import { fetchUsers } from "../services/users.service";
+//import { getUserInformation } from "../services/users.service";
 
 export default async function page() {
   const appointmentsFetched = await fetchAppointments();
   const appointments = appointmentsFetched.appointments || [];
-  const userData = await getUserInformation();
+  const usersData = await fetchUsers();
+  const users = usersData.allUsers || [];
+  // console.log("Appointments fetched:", appointmentsFetched);
+  // console.log("User data:", userData);
 
-  let filteredAppointments = appointments;
+  // let filteredAppointments = appointments;
 
-  if (userData && userData.role === "Patient") {
-    filteredAppointments = appointments.filter(
-      (appointment: { user: { _id: string } }) =>
-        appointment.user._id === userData.id
-    );
-  }
+  // if (userData && userData.role === "Patient:") {
+  //   filteredAppointments = appointments.filter(
+  //     (appointment: { user: { _id: string } }) =>
+  //       appointment.user._id === userData.id
+  //   );
+  // }
 
   return (
     <>
@@ -32,7 +36,7 @@ export default async function page() {
           Here are your upcoming appointments. Click on an appointment to edit
           it or to delete it.
         </Typography>
-        <AppointmentsList appointmentsList={filteredAppointments} />
+        <AppointmentsList appointmentsList={appointments} usersList={users} />
       </Container>
     </>
   );

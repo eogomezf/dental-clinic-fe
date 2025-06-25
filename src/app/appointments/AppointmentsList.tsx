@@ -39,6 +39,7 @@ import {
 import { formatDateRange, getAppointmentStatus } from "../utils/dateHelpers";
 import { EditCalendar } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import { User } from "../models/users.model";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -50,7 +51,14 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
+function AppointmentsList({
+  appointmentsList,
+  usersList,
+}: AppointmentsListProps) {
+  const getUserInformation = (id: string) => {
+    const user = usersList.find((user: User) => user._id === id);
+    return user ? `${user.firstName} ${user.lastName}` : "No data";
+  };
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
@@ -185,9 +193,7 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell component="th" scope="appointment">
-                    {user?.firstName && user?.lastName
-                      ? `${user.firstName} ${user.lastName}`
-                      : "No data"}
+                    {user ? getUserInformation(user) : "No data"}
                   </TableCell>
                   <TableCell>{title}</TableCell>
                   <TableCell>{description}</TableCell>
