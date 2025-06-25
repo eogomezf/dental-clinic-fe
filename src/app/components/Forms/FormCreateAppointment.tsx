@@ -194,7 +194,7 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
             sx={{ marginLeft: "50px" }}
             endIcon={<ReplyOutlinedIcon />}
             variant="contained"
-            color="secondary"
+            color="primary"
             onClick={() => router.push("/appointments")}
           >
             CANCEL
