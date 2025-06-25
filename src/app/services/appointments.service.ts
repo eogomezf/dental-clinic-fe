@@ -55,37 +55,15 @@ export async function deleteAppointment(id: string) {
     throw new Error(errorText || "Deleting appointment failed");
   }
 }
-// export async function createAppointment(appointment: {
+// export interface AppointmentPayload {
 //   title: string;
 //   description: string;
 //   startTime: string | Date;
 //   endTime: string | Date;
-// }) {
-//   const cookieStore = await cookies();
-//   const jwtToken = cookieStore.get("jwt_token")?.value;
-//   const response = await fetch(BASE_URL, {
-//     method: "POST",
-//     headers: {
-//       "x-access-token": jwtToken || "",
-//     },
-//     body: JSON.stringify(appointment),
-//   });
-//   if (!response.ok) {
-//     const errorText = await response.text();
-//     throw new Error(errorText || "fail to create appointment");
-//   }
-//   return response.json();
+//   user: string;
 // }
 
-export interface AppointmentPayload {
-  title: string;
-  description: string;
-  startTime: string | Date;
-  endTime: string | Date;
-  user: string;
-}
-
-export async function createAppointment(appointment: AppointmentPayload) {
+export async function createAppointment(appointment: Appointment) {
   const cookieStore = await cookies();
   const jwtToken = cookieStore.get("jwt_token")?.value;
 
