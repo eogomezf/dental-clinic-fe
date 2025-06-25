@@ -24,20 +24,12 @@ export async function EditAppointment(appointment: Appointment) {
   const cookieStore = await cookies();
   const jwtToken = cookieStore.get("jwt_token")?.value;
 
-  // const appointmentEdited = {
-  //   ...appointment,
-  //   user:
-  //     typeof appointment.user === "object" && appointment.user !== null
-  //       ? appointment.user._id
-  //       : appointment.user,
-  // };
-
-  //onsole.log("Appointment Edited:", appointmentEdited);
   console.log("Appointment to save", appointment);
 
   const response = await fetch(`${BASE_URL}/appointment/${appointment.id}`, {
     method: "PUT",
     headers: {
+      "Content-Type": "application/json",
       "x-access-token": jwtToken || "",
     },
     body: JSON.stringify(appointment),
