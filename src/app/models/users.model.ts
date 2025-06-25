@@ -3,5 +3,5 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
-  role: "admin" | "user";
+  role: "admin" | "user" | "Doctor" | "Patient";
 }

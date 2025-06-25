@@ -1,12 +1,12 @@
 import { User } from "./users.model";
 
 export interface Appointment {
-  id: string;
+  id?: string;
   title: string;
   description: string;
   startTime: string | Date;
   endTime: string | Date;
-  user?: string;
+  user: string;
   // user?: {
   //   _id: string;
   //   firstName: string;
