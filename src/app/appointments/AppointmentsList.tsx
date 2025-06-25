@@ -28,6 +28,7 @@ import {
 import Container from "@mui/material/Container";
 import Sheet from "@mui/joy/Sheet";
 import Delete from "@mui/icons-material/Delete";
+import Add from "@mui/icons-material/Add";
 import {
   fetchAppointments,
   deleteAppointment,
@@ -39,6 +40,7 @@ import {
 import { formatDateRange, getAppointmentStatus } from "../utils/dateHelpers";
 import { EditCalendar } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import { User } from "../models/users.model";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -50,7 +52,14 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
+function AppointmentsList({
+  appointmentsList,
+  usersList,
+}: AppointmentsListProps) {
+  const getUserInformation = (id: string) => {
+    const user = usersList.find((user: User) => user._id === id);
+    return user ? `${user.firstName} ${user.lastName}` : "No data";
+  };
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
@@ -151,8 +160,32 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
     "Status",
     "Actions",
   ];
+
+  const handleAddAppointment = () => {
+    router.push("/add-appointments");
+  };
+
   return (
     <Container className="flex flex-col items-center   justify-center py-4 ">
+      <Box
+        sx={{
+          mb: 2,
+          display: "flex",
+          justifyContent: "flex-end",
+          width: "100%",
+        }}
+      >
+        <Tooltip title="Add New Appointment">
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Add />}
+            onClick={handleAddAppointment}
+          >
+            Add Appointment
+          </Button>
+        </Tooltip>
+      </Box>
       <Box>
         <Sheet sx={{ height: 450, overflow: "auto" }}>
           <Table
@@ -185,9 +218,7 @@ function AppointmentsList({ appointmentsList }: AppointmentsListProps) {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell component="th" scope="appointment">
-                    {user?.firstName && user?.lastName
-                      ? `${user.firstName} ${user.lastName}`
-                      : "No data"}
+                    {user ? getUserInformation(user) : "No data"}
                   </TableCell>
                   <TableCell>{title}</TableCell>
                   <TableCell>{description}</TableCell>
