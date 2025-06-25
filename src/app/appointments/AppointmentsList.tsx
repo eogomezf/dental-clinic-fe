@@ -55,24 +55,14 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 function AppointmentsList({
   appointmentsList,
   usersList,
-}: AppointmentsListProps) {
-  const getUserInformation = (id: string) => {
+  userRole,
+}: AppointmentsListProps & { userRole: string }) {
+  const getUserName = (id: string) => {
     const user = usersList.find((user: User) => user._id === id);
     return user ? `${user.firstName} ${user.lastName}` : "No data";
   };
   const router = useRouter();
-  const [open, setOpen] = useState(false);
 
-  const handleClose = (
-    event: React.SyntheticEvent | Event,
-    reason?: SnackbarCloseReason
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-  };
   const [appointments, setAppointments] =
     useState<Appointment[]>(appointmentsList);
 
@@ -152,15 +142,19 @@ function AppointmentsList({
     setOpenModal(false);
   };
 
-  const headers = [
-    "Patinet",
-    "Title",
-    "Description",
-    "Date",
-    "Status",
-    "Actions",
+  let headers = [
+    "PATIENT",
+    "TITLE",
+    "DESCRIPTION",
+    "DATE & TIME",
+    "STATUS",
+    "ACTIONS",
   ];
 
+  if (userRole !== "Doctor" && userRole !== "admin") {
+    headers = ["TITLE", "DESCRIPTION", "DATE & TIME", "STATUS", "ACTIONS"];
+  } else {
+  }
   const handleAddAppointment = () => {
     router.push("/add-appointments");
   };
@@ -187,9 +181,9 @@ function AppointmentsList({
         </Tooltip>
       </Box>
       <Box>
-        <Sheet sx={{ height: 450, overflow: "auto" }}>
+        <Sheet sx={{ height: 480, overflow: "auto" }}>
           <Table
-            sx={{ minWidth: 1000 }}
+            sx={{ minWidth: 1100, bgcolor: "primary" }}
             aria-label="table with sticky header"
             stickyHeader
           >
@@ -217,9 +211,11 @@ function AppointmentsList({
                   key={id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell component="th" scope="appointment">
-                    {user ? getUserInformation(user) : "No data"}
-                  </TableCell>
+                  {userRole === "Doctor" ? (
+                    <TableCell component="th" scope="appointment">
+                      {user ? getUserName(user) : "No data"}
+                    </TableCell>
+                  ) : null}
                   <TableCell>{title}</TableCell>
                   <TableCell>{description}</TableCell>
                   <TableCell>
@@ -250,32 +246,20 @@ function AppointmentsList({
                       );
                     })()}
                   </TableCell>
-                  <TableCell align="right">
-                    <Stack spacing={2}>
+                  <TableCell>
+                    <Stack spacing={2} direction="row" justifyContent="center">
                       <ButtonGroup
                         variant="text"
                         aria-label="Appointment actions"
                       >
-                        <Snackbar
-                          message="Not implemented"
-                          open={open}
-                          autoHideDuration={2000}
-                          onClose={handleClose}
-                          anchorOrigin={{
-                            vertical: "top",
-                            horizontal: "right",
-                          }}
-                        />
                         <Tooltip title="Edit Appointment">
-                          <button
-                            className="text-blue-500 hover:underline"
+                          <Button
                             onClick={() => {
                               router.push("/appointments/" + id);
                             }}
                           >
                             <EditCalendar sx={{ color: "green" }} />
-                          </button>
-                                
+                          </Button>
                         </Tooltip>
 
                         <Tooltip title="Delete Appointment">
@@ -287,6 +271,7 @@ function AppointmentsList({
                                 description,
                                 startTime,
                                 endTime,
+                                user,
                               })
                             }
                             color="error"
