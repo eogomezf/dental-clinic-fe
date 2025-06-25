@@ -28,6 +28,7 @@ import {
 import Container from "@mui/material/Container";
 import Sheet from "@mui/joy/Sheet";
 import Delete from "@mui/icons-material/Delete";
+import Add from "@mui/icons-material/Add";
 import {
   fetchAppointments,
   deleteAppointment,
@@ -159,8 +160,32 @@ function AppointmentsList({
     "Status",
     "Actions",
   ];
+
+  const handleAddAppointment = () => {
+    router.push("/add-appointments");
+  };
+
   return (
     <Container className="flex flex-col items-center   justify-center py-4 ">
+      <Box
+        sx={{
+          mb: 2,
+          display: "flex",
+          justifyContent: "flex-end",
+          width: "100%",
+        }}
+      >
+        <Tooltip title="Add New Appointment">
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Add />}
+            onClick={handleAddAppointment}
+          >
+            Add Appointment
+          </Button>
+        </Tooltip>
+      </Box>
       <Box>
         <Sheet sx={{ height: 450, overflow: "auto" }}>
           <Table

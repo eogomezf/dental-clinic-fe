@@ -1,4 +1,5 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
 import {
@@ -14,11 +15,9 @@ import {
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import SendIcon from "@mui/icons-material/Send";
 import { appointmentSchema } from "./AppointmentSchema";
-import { fetchUsers } from "../services/users.service";
-import { getEmailFromToken } from "../services/users.service";
-import { useEffect } from "react";
-import { useState } from "react";
-//import { createAppointment } from "../services/appointments.service";
+import { fetchUsers, getEmailFromToken } from "../services/users.service";
+import { useEffect, useState } from "react";
+import { createAppointmentServer } from "../add-appointments/actions";
 
 interface FormData {
   title: string;
@@ -28,25 +27,24 @@ interface FormData {
   user: string;
   description: string;
 }
+
 interface User {
   _id: string;
   name: string;
   email: string;
 }
 
-const AppointmentForm = ({ userId }: { userId: string }) => {
-  // const userData = await getUserInformation();
-
-  // console.log("User information fetched:", userData);
+const AppointmentForm = () => {
   const [loggedUser, setLoggedUser] = useState<User | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const getLoggedUser = async () => {
       try {
         const email = await getEmailFromToken();
         const users = await fetchUsers();
-        const allUsers = users.allUsers || [];
-        const user = allUsers.find((u: { email: string }) => u.email === email);
+        const allUsers = users.allUsers || users;
+        const user = allUsers.find((u: User) => u.email === email);
         setLoggedUser(user ?? null);
       } catch (error) {
         console.error("Error fetching logged user:", error);
@@ -54,7 +52,6 @@ const AppointmentForm = ({ userId }: { userId: string }) => {
     };
     getLoggedUser();
   }, []);
-  const router = useRouter();
 
   const formik = useFormik<FormData>({
     initialValues: {
@@ -62,15 +59,12 @@ const AppointmentForm = ({ userId }: { userId: string }) => {
       date: "",
       startTime: "",
       endTime: "",
-      user: userId,
+      user: "",
       description: "",
     },
     validationSchema: appointmentSchema,
     onSubmit: async (values) => {
       try {
-        if (!process.env.NEXT_PUBLIC_API_URL) {
-          throw new Error("API URL is not defined");
-        }
         const payload = {
           title: values.title,
           user: values.user,
@@ -78,25 +72,11 @@ const AppointmentForm = ({ userId }: { userId: string }) => {
           endTime: `${values.date}T${values.endTime}:00`,
           description: values.description,
         };
-        console.log("Payload:", payload);
 
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/appointment`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-access-token":
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2ODQzYWMyZjkwYzg0MDQ0ODdjNzAyY2QiLCJuYW1lIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsImlhdCI6MTc1MDU0MTIyNSwiZXhwIjoxNzUwNTQ4NDI1fQ.Tmu1ufMsn2iSZ0pQDGTP_SMCZCp1whjXccUv455aUgc",
-            },
-            body: JSON.stringify(payload),
-            credentials: "include",
-          }
-        );
+        const result = await createAppointmentServer(payload);
 
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(errorData.message || "Error creating appointment");
+        if (!result.ok) {
+          throw new Error(result.message || "Error creating appointment");
         }
 
         alert("Appointment created successfully!");
@@ -107,6 +87,12 @@ const AppointmentForm = ({ userId }: { userId: string }) => {
       }
     },
   });
+
+  useEffect(() => {
+    if (loggedUser) {
+      formik.setFieldValue("user", loggedUser._id);
+    }
+  }, [loggedUser]);
 
   return (
     <Box

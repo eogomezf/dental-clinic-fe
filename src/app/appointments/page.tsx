@@ -12,17 +12,6 @@ export default async function page() {
   const appointments = appointmentsFetched.appointments || [];
   const usersData = await fetchUsers();
   const users = usersData.allUsers || [];
-  // console.log("Appointments fetched:", appointmentsFetched);
-  // console.log("User data:", userData);
-
-  // let filteredAppointments = appointments;
-
-  // if (userData && userData.role === "Patient:") {
-  //   filteredAppointments = appointments.filter(
-  //     (appointment: { user: { _id: string } }) =>
-  //       appointment.user._id === userData.id
-  //   );
-  // }
 
   return (
     <>
