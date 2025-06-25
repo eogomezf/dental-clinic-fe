@@ -11,7 +11,6 @@ async function Editpage({
 }) {
   const { id } = await params;
   const appointmentsFetched = await fetchAppointments();
-  console.log("Appointments fetched:", appointmentsFetched);
   const appointments = appointmentsFetched.appointments || [];
   const appointment = appointments.find((a: Appointment) => a.id == id);
 
