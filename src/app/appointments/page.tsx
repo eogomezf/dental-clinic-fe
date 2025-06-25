@@ -9,7 +9,12 @@ import { fetchUsers } from "../services/users.service";
 
 export default async function page() {
   const appointmentsFetched = await fetchAppointments();
-  const appointments = appointmentsFetched.appointments || [];
+
+  let appointments = [];
+  if (appointmentsFetched) {
+    appointments = appointmentsFetched.appointments || [];
+  }
+
   const usersData = await fetchUsers();
   const users = usersData.allUsers || [];
 
