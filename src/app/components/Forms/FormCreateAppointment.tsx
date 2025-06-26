@@ -39,7 +39,7 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
       date: "",
       startTime: "",
       endTime: "",
-      user: usersList[0]?._id || "",
+      user: "",
       description: "",
     },
     validationSchema: appointmentSchema,
@@ -162,16 +162,18 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
               labelId="user-label"
               id="user"
               name="user"
-              value={formik.values.user}
+              value={formik.values.user || ""}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               error={formik.touched.user && Boolean(formik.errors.user)}
             >
-              {usersList.map((user) => (
-                <MenuItem key={user._id} value={user._id}>
-                  {user.firstName} {user.lastName}
-                </MenuItem>
-              ))}
+              {usersList.map(
+                (user: { id: string; firstName: string; lastName: string }) => (
+                  <MenuItem key={user.id} value={user.id}>
+                    {user.firstName} {user.lastName}
+                  </MenuItem>
+                )
+              )}
             </Select>
           </FormControl>
         </Box>
