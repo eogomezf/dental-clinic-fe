@@ -180,7 +180,6 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
       startTime: start,
       endTime: end,
     };
-    console.log(appointment);
 
     const res = await EditAppointment(appointment);
 
