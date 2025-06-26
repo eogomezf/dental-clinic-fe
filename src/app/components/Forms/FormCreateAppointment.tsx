@@ -1,5 +1,5 @@
 "use client";
-
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
 import {
@@ -12,6 +12,8 @@ import {
   FormControl,
   Typography,
   FormHelperText,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import SendIcon from "@mui/icons-material/Send";
@@ -31,7 +33,7 @@ interface FormData {
 
 const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
   const router = useRouter();
-
+  const [open, setOpen] = useState(false);
   const formik = useFormik<FormData>({
     initialValues: {
       id: "",
@@ -60,11 +62,12 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
           throw new Error(result.message || "Error creating appointment");
         }
 
-        alert("Appointment created successfully!");
+        setOpen(true);
+
         router.push("/appointments");
       } catch (err) {
         console.error("Submission error:", err);
-        alert((err as Error).message || "Failed to create appointment");
+        // alert((err as Error).message || "Failed to create appointment");
       }
     },
   });
@@ -168,8 +171,12 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
               error={formik.touched.user && Boolean(formik.errors.user)}
             >
               {usersList.map(
-                (user: { id: string; firstName: string; lastName: string }) => (
-                  <MenuItem key={user.id} value={user.id}>
+                (user: {
+                  _id: string;
+                  firstName: string;
+                  lastName: string;
+                }) => (
+                  <MenuItem key={user._id} value={user._id}>
                     {user.firstName} {user.lastName}
                   </MenuItem>
                 )
@@ -251,6 +258,17 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
           >
             {formik.isSubmitting ? "Creating..." : "CREATE APPOINTMENT"}
           </Button>
+          <Snackbar
+            sx={{ width: "100%" }}
+            open={open}
+            autoHideDuration={6000}
+            onClose={() => setOpen(false)}
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          >
+            <Alert variant="filled" severity="success">
+              {"Appointment created successfully!"}
+            </Alert>
+          </Snackbar>
         </Box>
       </form>
     </Box>
