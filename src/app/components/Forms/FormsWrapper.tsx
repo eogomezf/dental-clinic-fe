@@ -5,10 +5,11 @@ import { useAuth } from "../../auth/context";
 import FormsTab from "./FormsTab";
 import SignInForm from "./SignInForm";
 import SignUpForm from "./SignUpForm";
-import type { SignInFormValues, SignUpFormValues } from "./Forms.types";
+import { SignInFormValues, SignUpFormValues } from "./Forms.types";
 import { Box, Paper, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { loginAction } from "@/app/login/server-actions";
+import { loginAction } from "@/app/action/actions";
+import { signupAction } from "@/app/action/sigupActions";
 
 const FormsWrapper: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -33,8 +34,14 @@ const FormsWrapper: React.FC = () => {
     }
   };
 
-  const handleSignUp = (values: SignUpFormValues) => {
-    console.log("Sign Up:", values);
+  const handleSignUp = async (values: SignUpFormValues) => {
+    try {
+      await signupAction(values);
+      router.push("/appointments");
+    } catch (err) {
+      console.error("Sign Up error", err);
+      setError("Failed to sig up. Please try again");
+    }
   };
 
   return (
@@ -105,11 +112,12 @@ const FormsWrapper: React.FC = () => {
           {activeTab === 0 ? (
             <SignInForm onSubmit={handleSignIn} isSubmitting={false} />
           ) : (
-            <SignUpForm onSubmit={handleSignUp} />
+            <SignUpForm onSubmit={handleSignUp} isSubmitting={false} />
           )}
         </FormsTab>
       </Box>
     </Box>
   );
 };
+
 export default FormsWrapper;

@@ -7,7 +7,11 @@ import {
   useCallback
 } from 'react';
 import { useRouter } from 'next/navigation';
+<<<<<<< HEAD
 import { logoutAction } from '@/app/login/server-actions';
+=======
+import { logoutAction } from '@/app/action/actions';
+>>>>>>> c232687c82f06e084bf2c56f89bf58be3210d49a
 
 type UserProfile = {
   id: string;
@@ -94,4 +98,8 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> c232687c82f06e084bf2c56f89bf58be3210d49a

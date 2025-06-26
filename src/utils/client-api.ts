@@ -1,9 +1,17 @@
 'use client';
+<<<<<<< HEAD
 import { fetchAPI, HTTPMethod } from './api';
 
 export const clientFetchAPI = async (
   endpoint: string,
   method: HTTPMethod,
+=======
+import { fetchAPI, HttpMethods } from './api';
+
+export const clientFetchAPI = async (
+  endpoint: string,
+  method: HttpMethods,
+>>>>>>> c232687c82f06e084bf2c56f89bf58be3210d49a
   body?: object,
   customHeaders: Record<string, string> = {}
 ) => {
