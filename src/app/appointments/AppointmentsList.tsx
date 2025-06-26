@@ -58,7 +58,7 @@ function AppointmentsList({
   userRole,
 }: AppointmentsListProps & { userRole: string }) {
   const getUserName = (id: string) => {
-    const user = usersList.find((user: User) => user.id === id);
+    const user = usersList.find((user: User) => user._id === id);
     return user ? `${user.firstName} ${user.lastName}` : "No data";
   };
   const router = useRouter();

@@ -10,7 +10,6 @@ import { getUserInformation } from "../services/users.service";
 
 export default async function page() {
   const appointmentsFetched = await fetchAppointments();
-  console.log("Appointments fetched:", appointmentsFetched);
 
   let appointments: Appointment[] = [];
   if (appointmentsFetched) {

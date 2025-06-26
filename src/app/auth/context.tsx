@@ -1,17 +1,13 @@
-'use client';
+"use client";
 import {
   createContext,
   useContext,
   useState,
   useEffect,
-  useCallback
-} from 'react';
-import { useRouter } from 'next/navigation';
-<<<<<<< HEAD
-import { logoutAction } from '@/app/login/server-actions';
-=======
-import { logoutAction } from '@/app/action/actions';
->>>>>>> c232687c82f06e084bf2c56f89bf58be3210d49a
+  useCallback,
+} from "react";
+import { useRouter } from "next/navigation";
+import { logoutAction } from "@/app/login/server-actions";
 
 type UserProfile = {
   id: string;
@@ -37,8 +33,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchUserStatus = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/auth/token', {
-        credentials: 'include'
+      const response = await fetch("/api/auth/token", {
+        credentials: "include",
       });
 
       if (response.ok) {
@@ -48,7 +44,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(null);
       }
     } catch (err) {
-      console.error('Failed to fetch user status:', err);
+      console.error("Failed to fetch user status:", err);
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -67,13 +63,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       await logoutAction();
       setUser(null);
-      router.replace('/');
+      router.replace("/");
       // clear any cached data
       router.refresh();
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.error("Error during logout:", error);
       setUser(null);
-      router.replace('/');
+      router.replace("/");
     }
   };
 
@@ -84,7 +80,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isLoading,
         user,
         login,
-        logout
+        logout,
       }}
     >
       {children}
@@ -95,11 +91,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> c232687c82f06e084bf2c56f89bf58be3210d49a
