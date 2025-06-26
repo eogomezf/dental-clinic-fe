@@ -6,15 +6,16 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import {
   TextField,
-  MenuItem,
-  FormControl,
-  Select,
-  InputLabel,
-  FormHelperText,
+  // MenuItem,
+  // FormControl,
+  // Select,
+  // InputLabel,
+  // FormHelperText,
 } from "@mui/material";
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import SendIcon from "@mui/icons-material/Send";
 import { Button, Grid, Alert, Snackbar } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 import {
   EditAppointment,
   fetchAppointments,
@@ -161,10 +162,10 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
 
   const handleSelectChange =
     (field: keyof typeof form) =>
-    (event: React.ChangeEvent<{ value: unknown }>) => {
+    (event: React.SyntheticEvent, value: string | null) => {
       setForm((prevForm) => ({
         ...prevForm,
-        [field]: event.target.value as string,
+        [field]: value || "",
       }));
     };
 
@@ -244,7 +245,8 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
               : "Editing Appointment"} */}
           </Typography>
           <Box display="flex" justifyContent="center" gap={2} m={5}>
-            <FormControl fullWidth required error={form.title.trim() === ""}>
+            <Grid display="flex" flexDirection={"column"} sx={{ width: "50%" }}>
+              {/* <FormControl fullWidth required error={form.title.trim() === ""}>
               <InputLabel id="title-label">Select your title</InputLabel>
               <Select
                 labelId="title-label"
@@ -262,7 +264,26 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
               {form.title.trim() === "" && (
                 <FormHelperText>The title is required</FormHelperText>
               )}
-            </FormControl>
+            </FormControl> */}
+              <Autocomplete
+                id="title"
+                options={appointmentTypes}
+                value={form.title || null}
+                onChange={handleSelectChange("title")}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select your title"
+                    required
+                    error={form.title.trim() === ""}
+                    helperText={
+                      form.title.trim() === "" ? "The title is required" : ""
+                    }
+                  />
+                )}
+              />
+            </Grid>
+
             <Grid display="flex" flexDirection={"column"} sx={{ width: "50%" }}>
               <TextField
                 fullWidth
