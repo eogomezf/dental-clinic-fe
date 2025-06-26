@@ -21,3 +21,8 @@ export type AppointmentStatus = {
   color: "error" | "warning" | "success" | "info";
   Icon: React.ElementType;
 };
+
+export interface AppointmentEditProps {
+  appointment: Appointment;
+  user: User;
+}

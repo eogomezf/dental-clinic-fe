@@ -4,14 +4,7 @@ import { useEffect, useState } from "react";
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import {
-  TextField,
-  // MenuItem,
-  // FormControl,
-  // Select,
-  // InputLabel,
-  // FormHelperText,
-} from "@mui/material";
+import { TextField } from "@mui/material";
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import SendIcon from "@mui/icons-material/Send";
 import { Button, Grid, Alert, Snackbar } from "@mui/material";
@@ -21,19 +14,15 @@ import {
   fetchAppointments,
 } from "../../services/appointments.service";
 import { Appointment } from "@/app/models/appointments.model";
+import { AppointmentEditProps } from "@/app/models/appointments.model";
 
-interface AppointmentProp {
-  appointment: Appointment;
-}
-
-function FormEditAppointment({ appointment }: AppointmentProp) {
+function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
   const [errorStartTime, setErrorStartTime] = useState("");
   const [errorEndTime, setErrorEndTime] = useState("");
   const [statusSubmit, setStatusSubmit] = useState(false);
-
   const [message, setMessage] = useState("");
 
   const [severity, setSeverity] = useState<
@@ -236,35 +225,15 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
             gutterBottom
             sx={{ textAlign: "center", pt: 4 }}
           >
-            Editing Appointment
-            {/* {appointment.user
+            {user
               ? "Editing Appointment of " +
-                appointment.user?.firstName +
+                user?.firstName +
                 " " +
-                appointment.user?.lastName
-              : "Editing Appointment"} */}
+                user?.lastName
+              : "Editing Appointment"}
           </Typography>
           <Box display="flex" justifyContent="center" gap={2} m={5}>
             <Grid display="flex" flexDirection={"column"} sx={{ width: "50%" }}>
-              {/* <FormControl fullWidth required error={form.title.trim() === ""}>
-              <InputLabel id="title-label">Select your title</InputLabel>
-              <Select
-                labelId="title-label"
-                id="title"
-                value={form.title}
-                onChange={handleSelectChange("title")}
-                label="Select your title"
-              >
-                {appointmentTypes.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-              {form.title.trim() === "" && (
-                <FormHelperText>The title is required</FormHelperText>
-              )}
-            </FormControl> */}
               <Autocomplete
                 id="title"
                 options={appointmentTypes}
