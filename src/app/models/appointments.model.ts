@@ -7,6 +7,8 @@ export interface Appointment {
   startTime: string | Date;
   endTime: string | Date;
   user: string;
+  status: string;
+  observations?: string;
 }
 
 export interface AppointmentsListProps {
@@ -16,6 +18,6 @@ export interface AppointmentsListProps {
 
 export type AppointmentStatus = {
   label: string;
-  color: "error" | "warning" | "success";
+  color: "error" | "warning" | "success" | "info";
   Icon: React.ElementType;
 };
