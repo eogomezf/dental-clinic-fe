@@ -206,84 +206,106 @@ function AppointmentsList({
                     page * rowsPerPage + rowsPerPage
                   )
                 : appointments
-              ).map(({ id, title, description, startTime, endTime, user }) => (
-                <TableRow
-                  key={id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  {userRole === "Doctor" ? (
-                    <TableCell component="th" scope="appointment">
-                      {user ? getUserName(user) : "No data"}
+              ).map(
+                ({
+                  id,
+                  title,
+                  description,
+                  startTime,
+                  endTime,
+                  user,
+                  status,
+                }) => (
+                  <TableRow
+                    key={id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    {userRole === "Doctor" ? (
+                      <TableCell component="th" scope="appointment">
+                        {user ? getUserName(user) : "No data"}
+                      </TableCell>
+                    ) : null}
+                    <TableCell>{title}</TableCell>
+                    <TableCell>{description}</TableCell>
+                    <TableCell>
+                      {(() => {
+                        const { datePart, time } = formatDateRange(
+                          startTime,
+                          endTime
+                        );
+                        return (
+                          <>
+                            <div>{datePart}</div>
+                            <div>{time}</div>
+                          </>
+                        );
+                      })()}
                     </TableCell>
-                  ) : null}
-                  <TableCell>{title}</TableCell>
-                  <TableCell>{description}</TableCell>
-                  <TableCell>
-                    {(() => {
-                      const { datePart, time } = formatDateRange(
-                        startTime,
-                        endTime
-                      );
-                      return (
-                        <>
-                          <div>{datePart}</div>
-                          <div>{time}</div>
-                        </>
-                      );
-                    })()}
-                  </TableCell>
-                  <TableCell>
-                    {(() => {
-                      const { label, color, Icon } =
-                        getAppointmentStatus(startTime);
-                      return (
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <Icon color={color} fontSize="small" />
-                          <Typography color={color} fontSize="0.9rem">
-                            {label}
-                          </Typography>
-                        </Stack>
-                      );
-                    })()}
-                  </TableCell>
-                  <TableCell>
-                    <Stack spacing={2} direction="row" justifyContent="center">
-                      <ButtonGroup
-                        variant="text"
-                        aria-label="Appointment actions"
+                    <TableCell>
+                      {(() => {
+                        const { label, color, Icon } = getAppointmentStatus(
+                          startTime,
+                          status
+                        );
+                        return (
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            spacing={1}
+                          >
+                            <Icon color={color} fontSize="small" />
+                            <Typography color={color} fontSize="0.9rem">
+                              {label}
+                            </Typography>
+                          </Stack>
+                        );
+                      })()}
+                    </TableCell>
+                    <TableCell>
+                      <Stack
+                        spacing={2}
+                        direction="row"
+                        justifyContent="center"
                       >
-                        <Tooltip title="Edit Appointment">
-                          <Button
-                            onClick={() => {
-                              router.push("/appointments/" + id);
-                            }}
-                          >
-                            <EditCalendar sx={{ color: "green" }} />
-                          </Button>
-                        </Tooltip>
+                        <ButtonGroup
+                          variant="text"
+                          aria-label="Appointment actions"
+                          disabled={status === "attended"}
+                        >
+                          <Tooltip title="Edit Appointment">
+                            <Button
+                              onClick={() => {
+                                router.push("/appointments/" + id);
+                              }}
+                            >
+                              <EditCalendar sx={{ color: "green" }} />
+                            </Button>
+                          </Tooltip>
 
-                        <Tooltip title="Delete Appointment">
-                          <Button
-                            onClick={() =>
-                              handleOpenModal({
-                                id,
-                                title,
-                                description,
-                                startTime,
-                                endTime,
-                                user,
-                              })
-                            }
-                            color="error"
-                          >
-                            <Delete />
-                          </Button>
-                        </Tooltip>
-                      </ButtonGroup>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              ))}
+                          <Tooltip title="Delete Appointment">
+                            <Button
+                              onClick={() =>
+                                handleOpenModal({
+                                  id,
+                                  title,
+                                  description,
+                                  startTime,
+                                  endTime,
+                                  user,
+                                  status,
+                                })
+                              }
+                              color="error"
+                            >
+                              <Delete />
+                            </Button>
+                          </Tooltip>
+                        </ButtonGroup>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                )
+              )}
               {emptyRows > 0 && (
                 <TableRow style={{ height: 53 * emptyRows }}>
                   <TableCell colSpan={6} />
