@@ -21,9 +21,8 @@ export default async function page() {
   }
 
   const loggedUser = await getUserInformation();
-  console.log("Logged User:", loggedUser);
   const userRole = loggedUser?.role || "";
-  console.log("User Role:", userRole);
+
   const usersData = await fetchUsers();
   const users = usersData.allUsers || [];
 
