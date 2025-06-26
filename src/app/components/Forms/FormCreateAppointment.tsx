@@ -29,9 +29,16 @@ interface FormData {
   endTime: string;
   user: string;
   description: string;
+  status: string;
 }
 
 const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
+  console.log("FormCreateAppointment rendered with usersList:", usersList);
+  console.log(
+    "FormCreateAppointment rendered with usersList[0]:",
+    usersList[0]
+  );
+
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const formik = useFormik<FormData>({
@@ -41,8 +48,9 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
       date: "",
       startTime: "",
       endTime: "",
-      user: "",
+      user: usersList.length > 0 ? usersList[0]._id : "",
       description: "",
+      status: "pending",
     },
     validationSchema: appointmentSchema,
     onSubmit: async (values) => {
@@ -54,6 +62,7 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
           startTime: `${values.date}T${values.startTime}:00`,
           endTime: `${values.date}T${values.endTime}:00`,
           description: values.description,
+          status: "pending",
         };
 
         const result = await createAppointment(payload);
@@ -165,7 +174,7 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
               labelId="user-label"
               id="user"
               name="user"
-              value={formik.values.user || ""}
+              value={formik.values.user}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               error={formik.touched.user && Boolean(formik.errors.user)}
