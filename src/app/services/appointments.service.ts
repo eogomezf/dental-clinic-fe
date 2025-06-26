@@ -13,6 +13,12 @@ export async function fetchAppointments() {
         "x-access-token": jwtToken || "",
       },
     });
+    if (!response.ok) {
+      return response.body || [];
+    } else {
+    }
+    console.log("Response from fetchAppointments:", response);
+    console.log("Response from fetchAppointments status:", response.status);
 
     return response.json();
   } catch (error) {
