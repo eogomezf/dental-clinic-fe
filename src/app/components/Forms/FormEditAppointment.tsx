@@ -20,6 +20,7 @@ import {
   fetchAppointments,
 } from "../../services/appointments.service";
 import { Appointment } from "@/app/models/appointments.model";
+import { SelectChangeEvent } from "@mui/material/Select";
 
 interface AppointmentProp {
   appointment: Appointment;
@@ -158,13 +159,22 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
 
       setForm({ ...form, [field]: value });
     };
-
+  /*
   const handleSelectChange =
     (field: keyof typeof form) =>
     (event: React.ChangeEvent<{ value: unknown }>) => {
       setForm((prevForm) => ({
         ...prevForm,
         [field]: event.target.value as string,
+      }));
+    };
+    */
+
+  const handleSelectChange =
+    (field: keyof typeof form) => (event: SelectChangeEvent) => {
+      setForm((prevForm) => ({
+        ...prevForm,
+        [field]: event.target.value,
       }));
     };
 
