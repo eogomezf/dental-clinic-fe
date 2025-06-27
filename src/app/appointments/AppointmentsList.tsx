@@ -273,7 +273,7 @@ function AppointmentsList({
                     key={id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                    {userRole === "Doctor" ? (
+                    {userRole === "admin" ? (
                       <TableCell component="th" scope="appointment">
                         {/* {user ? getUserName(user) : "No data"} */}
                         {firstName} {lastName}
