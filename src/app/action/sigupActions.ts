@@ -30,6 +30,14 @@ export const signupAction = async (data: SignUpFormValues) => {
       sameSite: "lax",
     });
 
+    cookie.set("user", JSON.stringify(result.user), {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 1,
+      path: "/",
+      sameSite: "lax",
+    });
+
     return "ok";
   } catch (error) {
     console.error("An error occurred during signup:", error);
