@@ -1,20 +1,19 @@
 "use server";
 import { cookies } from "next/headers";
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+import { fetchAPI } from "@/utils/api";
 
 export async function fetchUsers() {
   const cookieStore = await cookies();
   const jwtToken = cookieStore.get("jwt_token")?.value;
+  let response;
   try {
-    const response = await fetch(`${BASE_URL}/user`, {
-      method: "GET",
-      headers: {
-        "x-access-token": jwtToken || "",
-      },
+    response = await fetchAPI("/user", "GET", undefined, {
+      "x-access-token": jwtToken || "",
     });
-    return response.json();
+
+    return response;
   } catch (error) {
-    console.log(error);
+    console.error("Login failed:", error);
   }
 }
 
