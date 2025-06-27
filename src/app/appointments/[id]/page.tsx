@@ -11,7 +11,7 @@ async function Editpage({
     id: string;
   };
 }) {
-  const { id } = params;
+  const { id } = await params;
   const appointmentsFetched = await fetchAppointments();
   const appointments = appointmentsFetched.appointments || [];
   const appointment = appointments.find((a: Appointment) => a.id == id);
@@ -19,8 +19,6 @@ async function Editpage({
   const usersData = await fetchUsers();
   const users = usersData.allUsers || [];
   const user = users.find((user: User) => user._id === appointment.user);
-
-  console.log("Editpage userInfo", user);
 
   return (
     <div>
