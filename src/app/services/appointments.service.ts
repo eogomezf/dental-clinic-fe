@@ -2,20 +2,25 @@
 import { cookies } from "next/headers";
 import { fetchAPI } from "@/utils/api";
 import { Appointment } from "../models/appointments.model";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export async function fetchAppointments() {
   const cookieStore = await cookies();
   const jwtToken = cookieStore.get("jwt_token")?.value;
-  try {
-    const response = await fetchAPI("/appointment", "GET", undefined, {
-      "x-access-token": jwtToken || "",
-    });
 
+  try {
+    const response = await fetch(`${BASE_URL}/appointment`, {
+      method: "GET",
+      headers: {
+        "x-access-token": jwtToken || "",
+      },
+    });
     if (response.status === 204) {
+      console.log("No appointments found");
       return [];
     }
 
-    return response;
+    return response.json();
   } catch (error) {
     console.error(error);
     return [];
