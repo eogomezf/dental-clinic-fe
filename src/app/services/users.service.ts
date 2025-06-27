@@ -1,6 +1,5 @@
 "use server";
 import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export async function fetchUsers() {
@@ -19,48 +18,15 @@ export async function fetchUsers() {
   }
 }
 
-export async function getEmailFromToken() {
-  const cookieStore = cookies();
-  const jwtToken = (await cookieStore).get("jwt_token")?.value;
+export async function getUserInfo() {
+  const cookie = cookies();
+  const cookieValue = (await cookie).get("user")?.value;
 
-  if (!jwtToken) {
+  if (!cookieValue) {
     throw new Error("No token found");
   }
 
-  const decoded = jwt.decode(jwtToken) as { name?: string; email?: string };
-  const email = decoded?.email || decoded?.name;
+  const userInfo = JSON.parse(cookieValue);
 
-  if (!email) {
-    throw new Error("Email not found in token");
-  }
-
-  return email;
-}
-
-export async function getUserInformation() {
-  try {
-    const email = await getEmailFromToken();
-
-    if (!email) {
-      throw new Error("No email found in token");
-    }
-
-    const usersFetched = await fetchUsers();
-    const users = usersFetched.allUsers || [];
-    const user = users.find((user: { email: string }) => user.email === email);
-
-    if (!user) {
-      throw new Error(`User not found: ${email}`);
-    }
-
-    return {
-      fullName: user.firstName + " " + user.lastName || "Nombre no disponible",
-      email: user.email,
-      role: user.role === "user" ? "Patient" : "Doctor",
-      id: user._id,
-    };
-  } catch (error) {
-    console.error("Error:", error);
-    return null;
-  }
+  return userInfo || null;
 }
