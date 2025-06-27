@@ -324,36 +324,33 @@ function AppointmentsList({
                         <ButtonGroup
                           variant="text"
                           aria-label="Appointment actions"
-                          disabled={status === "attended"}
                         >
-                          <Tooltip title="Edit Appointment">
-                            <Button
-                              onClick={() => {
-                                router.push("/appointments/" + id);
-                              }}
-                            >
-                              <EditCalendar sx={{ color: "green" }} />
-                            </Button>
-                          </Tooltip>
+                          <Button
+                            disabled={status === "attended"}
+                            onClick={() => {
+                              router.push("/appointments/" + id);
+                            }}
+                          >
+                            <EditCalendar sx={{ color: "green" }} />
+                          </Button>
 
-                          <Tooltip title="Delete Appointment">
-                            <Button
-                              onClick={() =>
-                                handleOpenModal({
-                                  id,
-                                  title,
-                                  description,
-                                  startTime,
-                                  endTime,
-                                  user,
-                                  status,
-                                })
-                              }
-                              color="error"
-                            >
-                              <Delete />
-                            </Button>
-                          </Tooltip>
+                          <Button
+                            disabled={status === "attended"}
+                            onClick={() =>
+                              handleOpenModal({
+                                id,
+                                title,
+                                description,
+                                startTime,
+                                endTime,
+                                user,
+                                status,
+                              })
+                            }
+                            color="error"
+                          >
+                            <Delete />
+                          </Button>
                         </ButtonGroup>
                       </Stack>
                     </TableCell>
