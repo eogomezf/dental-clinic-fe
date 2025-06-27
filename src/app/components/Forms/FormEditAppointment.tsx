@@ -41,6 +41,7 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
     startTime: "",
     endTime: "",
     status: "",
+    observations: "",
   });
 
   useEffect(() => {
@@ -54,6 +55,7 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
       startTime: start.toTimeString().slice(0, 5),
       endTime: end.toTimeString().slice(0, 5),
       status: appointment.status || "",
+      observations: appointment.observations || "",
     });
   }, [appointment]);
 
@@ -170,7 +172,15 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
     };
 
   const handleUpdate = async () => {
-    const { title, description, date, startTime, endTime, status } = form;
+    const {
+      title,
+      description,
+      date,
+      startTime,
+      endTime,
+      status,
+      observations,
+    } = form;
     const start = new Date(`${date}T${startTime}`);
     const end = new Date(`${date}T${endTime}`);
 
@@ -181,6 +191,7 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
       startTime: start,
       endTime: end,
       status: status,
+      observations: observations,
     };
 
     const res = await EditAppointment(appointment);
@@ -355,6 +366,17 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
                   }
                 />
               )}
+            />
+          </Box>
+          <Box m={5}>
+            <TextField
+              fullWidth
+              label="Enter your observations!"
+              id="observations"
+              multiline
+              rows={4}
+              value={form.observations}
+              onChange={handleChange("observations")}
             />
           </Box>
           <Box display="flex" justifyContent="space-between">
