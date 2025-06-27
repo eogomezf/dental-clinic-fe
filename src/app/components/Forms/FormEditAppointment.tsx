@@ -40,6 +40,7 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
     date: "",
     startTime: "",
     endTime: "",
+    status: "",
   });
 
   useEffect(() => {
@@ -52,6 +53,7 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
       date: start.toISOString().split("T")[0],
       startTime: start.toTimeString().slice(0, 5),
       endTime: end.toTimeString().slice(0, 5),
+      status: appointment.status || "",
     });
   }, [appointment]);
 
@@ -158,8 +160,17 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
       }));
     };
 
+  const handleSelectStatus =
+    (field: keyof typeof form) =>
+    (event: React.SyntheticEvent, value: string | null) => {
+      setForm((prevForm) => ({
+        ...prevForm,
+        [field]: value || "",
+      }));
+    };
+
   const handleUpdate = async () => {
-    const { title, description, date, startTime, endTime } = form;
+    const { title, description, date, startTime, endTime, status } = form;
     const start = new Date(`${date}T${startTime}`);
     const end = new Date(`${date}T${endTime}`);
 
@@ -169,6 +180,7 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
       description,
       startTime: start,
       endTime: end,
+      status: status,
     };
 
     const res = await EditAppointment(appointment);
@@ -202,6 +214,8 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
     "Tooth Extraction",
     "Whitening Session",
   ];
+
+  const appointmentStatus = ["pending", "cancel", "attended"];
 
   return (
     <Box
@@ -321,6 +335,26 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
                   ? "Please enter a description"
                   : ""
               }
+            />
+          </Box>
+
+          <Box m={5}>
+            <Autocomplete
+              id="status"
+              options={appointmentStatus}
+              value={form.status || null}
+              onChange={handleSelectStatus("status")}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select the status"
+                  required
+                  error={form.status.trim() === ""}
+                  helperText={
+                    form.status.trim() === "" ? "The status is required" : ""
+                  }
+                />
+              )}
             />
           </Box>
           <Box display="flex" justifyContent="space-between">
