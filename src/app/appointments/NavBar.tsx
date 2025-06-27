@@ -8,7 +8,7 @@ import Container from "@mui/material/Container";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 import { useRouter } from "next/navigation";
-import { logoutAction } from "@/app/login/server-actions";
+import { logoutAction } from "../action/actions";
 import { getUserInfo } from "../services/users.service";
 import { useState } from "react";
 import { Button } from "@mui/material";
