@@ -10,7 +10,7 @@ export async function fetchUsers() {
     response = await fetchAPI("/user", "GET", undefined, {
       "x-access-token": jwtToken || "",
     });
-
+    console.log(response);
     return response;
   } catch (error) {
     console.error("Login failed:", error);
