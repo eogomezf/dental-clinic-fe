@@ -14,11 +14,30 @@ import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import SendIcon from "@mui/icons-material/Send";
 import { appointmentSchema } from "../../add-appointments/AppointmentSchema";
 import { createAppointment } from "../../services/appointments.service";
-import { AppointmentsListProps } from "@/app/models/appointments.model";
 import Autocomplete from "@mui/material/Autocomplete";
+import { User } from "@/app/models/users.model";
 
-interface FormData {
-  id: string;
+const APPOINTMENT_TYPES = [
+  "Brace Consultation",
+  "Braces Adjustment",
+  "Cavity Filling",
+  "Consultation for Braces",
+  "Dental Cleaning",
+  "Dental Crown Placement",
+  "Emergency Visit",
+  "Follow-up Visit",
+  "Gum Treatment",
+  "Implant Consultation",
+  "Invisalign Evaluation",
+  "Mouthguard Fitting",
+  "Pediatric Cleaning",
+  "Post-op Check",
+  "Root Canal Evaluation",
+  "Tooth Extraction",
+  "Whitening Session",
+];
+
+interface CreateAppointmentFormData {
   title: string;
   date: string;
   startTime: string;
@@ -27,19 +46,15 @@ interface FormData {
   description: string;
   status: string;
 }
+interface FormCreateAppointmentProps {
+  usersList: User[],
+}
 
-const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
-  console.log("FormCreateAppointment rendered with usersList:", usersList);
-  console.log(
-    "FormCreateAppointment rendered with usersList[0]:",
-    usersList[0]
-  );
-
+const FormCreateAppointment: React.FC<FormCreateAppointmentProps> = ({ usersList }) => {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const formik = useFormik<FormData>({
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const formik = useFormik<CreateAppointmentFormData>({
     initialValues: {
-      id: "",
       title: "",
       date: "",
       startTime: "",
@@ -50,52 +65,25 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
     },
     validationSchema: appointmentSchema,
     onSubmit: async (values) => {
-      try {
-        const payload = {
-          id: values.id,
-          title: values.title,
-          user: values.user,
+        try {
+        const result = await createAppointment({
+          ...values,
           startTime: `${values.date}T${values.startTime}:00`,
           endTime: `${values.date}T${values.endTime}:00`,
-          description: values.description,
-          status: "pending",
-        };
-
-        const result = await createAppointment(payload);
+        });
 
         if (!result.ok) {
           throw new Error(result.message || "Error creating appointment");
         }
 
-        setOpen(true);
+        setShowSnackbar(true);
 
         router.push("/appointments");
       } catch (err) {
         console.error("Submission error:", err);
-        // alert((err as Error).message || "Failed to create appointment");
       }
     },
   });
-
-  const appointmentTypes = [
-    "Brace Consultation",
-    "Braces Adjustment",
-    "Cavity Filling",
-    "Consultation for Braces",
-    "Dental Cleaning",
-    "Dental Crown Placement",
-    "Emergency Visit",
-    "Follow-up Visit",
-    "Gum Treatment",
-    "Implant Consultation",
-    "Invisalign Evaluation",
-    "Mouthguard Fitting",
-    "Pediatric Cleaning",
-    "Post-op Check",
-    "Root Canal Evaluation",
-    "Tooth Extraction",
-    "Whitening Session",
-  ];
 
   return (
     <Box
@@ -119,9 +107,9 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
           <Box sx={{ width: "50%" }}>
             <Autocomplete
               id="title"
-              options={appointmentTypes}
+              options={APPOINTMENT_TYPES}
               value={formik.values.title}
-              onChange={(event, newValue) => {
+              onChange={(_, newValue) => {
                 formik.setFieldValue("title", newValue);
               }}
               onBlur={() => formik.setFieldTouched("title", true)}
@@ -164,7 +152,7 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
             value={
               usersList.find((user) => user._id === formik.values.user) || null
             }
-            onChange={(event, newValue) => {
+            onChange={(_, newValue) => {
               formik.setFieldValue("user", newValue?._id || "");
             }}
             onBlur={() => formik.setFieldTouched("user", true)}
@@ -249,15 +237,16 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
             variant="contained"
             color="primary"
             type="submit"
+            onClick={() => alert("Snowball")}
             disabled={formik.isSubmitting}
           >
             {formik.isSubmitting ? "Creating..." : "CREATE APPOINTMENT"}
           </Button>
           <Snackbar
             sx={{ width: "100%" }}
-            open={open}
+            open={showSnackbar}
             autoHideDuration={6000}
-            onClose={() => setOpen(false)}
+            onClose={() => setShowSnackbar(false)}
             anchorOrigin={{ vertical: "top", horizontal: "center" }}
           >
             <Alert variant="filled" severity="success">
