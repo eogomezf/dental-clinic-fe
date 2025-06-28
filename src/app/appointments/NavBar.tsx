@@ -7,11 +7,15 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import IconButton from '@mui/material/IconButton';
+import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import { useRouter } from "next/navigation";
 import { logoutAction } from "../action/actions";
 import { getUserInfo } from "../services/users.service";
 import { useState } from "react";
-import { Button } from "@mui/material";
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 type UserData = {
   firstName: string;
@@ -26,7 +30,10 @@ export default function ResponsiveAppBar() {
     role: "",
   });
 
-  React.useEffect(() => {
+  const [isLoading, setIsLoading] = useState(true);
+
+    React.useEffect(() => {
+    setIsLoading(true);
     getUserInfo().then((data) => {
       if (data) {
         setUserData({
@@ -36,6 +43,7 @@ export default function ResponsiveAppBar() {
         });
       }
     });
+    setIsLoading(false);
   }, []);
 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -56,7 +64,8 @@ export default function ResponsiveAppBar() {
   return (
     <AppBar position="fixed">
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
+        <Toolbar disableGutters sx={{display: "flex", justifyContent: "space-between"}}>
+          <Box display={"flex"} flexDirection={"row"}>
           <HealthAndSafetyIcon
             sx={{
               display: { xs: "none", md: "flex" },
@@ -103,25 +112,26 @@ export default function ResponsiveAppBar() {
           >
             Dentora Pro
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          </Box>
+            {isLoading 
+              ? <CircularProgress color="inherit"/> : 
+            (<Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", gap: 2, justifyContent: "center", }}>
+            <div className="text-white font-bold">{userData.role === "admin" ? <ManageAccountsIcon/> : <PermIdentityIcon />}</div>
             <Typography
               variant="h6"
-              component="div"
-              sx={{ flexGrow: 1, textAlign: "right" }}
+              component="p"
             >
-              {userData.role === "admin" ? "Doctor" : "Patient"}{" "}
-              {userData.firstName} {userData.lastName}{" "}
+              {userData.firstName} {userData.lastName}
             </Typography>
-          </Box>
-          <Box sx={{ flexGrow: 0 }}>
-            <Button
-              sx={{ flexGrow: 1, color: "white" }}
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-            >
-              <LogoutIcon />
-            </Button>
-          </Box>
+            <IconButton 
+                size="small"
+                onClick={handleLogout}
+                disabled={isLoggingOut} >
+              <LogoutIcon/>
+            </IconButton>
+          </Box>)
+            }
+          
         </Toolbar>
       </Container>
     </AppBar>
