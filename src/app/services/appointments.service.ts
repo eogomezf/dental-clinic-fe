@@ -62,14 +62,14 @@ export async function deleteAppointment(id: string) {
   }
 }
 
-export async function createAppointment(appointment: Appointment) {
+export async function createAppointment(appointment: Omit<Appointment, "id">) {
   const cookieStore = await cookies();
   const jwtToken = cookieStore.get("jwt_token")?.value;
 
   if (!jwtToken) {
     throw new Error("Token not found in cookies");
   }
-
+  
   try {
     const response = await fetchAPI("/appointment", "POST", appointment, {
       "x-access-token": jwtToken || "",
