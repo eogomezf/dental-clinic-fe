@@ -15,16 +15,39 @@ import {
 } from "../../services/appointments.service";
 import { Appointment } from "@/app/models/appointments.model";
 import { AppointmentEditProps } from "@/app/models/appointments.model";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
+const APPOINTMENT_TYPES = [
+  "Brace Consultation",
+  "Braces Adjustment",
+  "Cavity Filling",
+  "Consultation for Braces",
+  "Dental Cleaning",
+  "Dental Crown Placement",
+  "Emergency Visit",
+  "Follow-up Visit",
+  "Gum Treatment",
+  "Implant Consultation",
+  "Invisalign Evaluation",
+  "Mouthguard Fitting",
+  "Pediatric Cleaning",
+  "Post-op Check",
+  "Root Canal Evaluation",
+  "Tooth Extraction",
+  "Whitening Session",
+];
 
 function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [showSnackbar, setShowSnakbar] = useState(false);
   const [error, setError] = useState("");
   const [errorStartTime, setErrorStartTime] = useState("");
   const [errorEndTime, setErrorEndTime] = useState("");
   const [statusSubmit, setStatusSubmit] = useState(false);
   const [message, setMessage] = useState("");
-  
 
   const [severity, setSeverity] = useState<
     "success" | "error" | "info" | "warning"
@@ -32,7 +55,7 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
 
   const showMessage = (alertMessage: string) => {
     setMessage(alertMessage);
-    setOpen(true);
+    setShowSnakbar(true);
   };
 
   const [form, setForm] = useState({
@@ -202,30 +225,10 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
       setSeverity("success");
       router.push("/appointments");
     } else {
-      showMessage("The appointmet was not updated");
+      showMessage("The appointmet was not updated " + res.error);
       setSeverity("error");
     }
   };
-
-  const appointmentTypes = [
-    "Brace Consultation",
-    "Braces Adjustment",
-    "Cavity Filling",
-    "Consultation for Braces",
-    "Dental Cleaning",
-    "Dental Crown Placement",
-    "Emergency Visit",
-    "Follow-up Visit",
-    "Gum Treatment",
-    "Implant Consultation",
-    "Invisalign Evaluation",
-    "Mouthguard Fitting",
-    "Pediatric Cleaning",
-    "Post-op Check",
-    "Root Canal Evaluation",
-    "Tooth Extraction",
-    "Whitening Session",
-  ];
 
   const appointmentStatus = ["pending", "cancel", "attended"];
 
@@ -235,124 +238,103 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
         width: "100%",
         maxWidth: 700,
         mx: "auto",
-        mt: 5,
-        pb: 5,
+        mt: 2,
         border: "solid 1px gray",
         borderRadius: 2,
         bgcolor: "#ffffee",
         color: "primary",
       }}
     >
-      <>
-        <form onSubmit={handleSubmit}>
-          <Typography
-            variant="h5"
-            color="primary"
-            gutterBottom
-            sx={{ textAlign: "center", pt: 4 }}
+      <form onSubmit={handleSubmit}>
+        <Typography
+          variant="h5"
+          color="primary"
+          gutterBottom
+          sx={{ textAlign: "center", pt: 3 }}
+        >
+          {user
+            ? "Editing Appointment of " + user?.firstName + " " + user?.lastName
+            : "Editing Appointment"}
+        </Typography>
+        <Box
+          display="flex"
+          flexDirection={"column"}
+          justifyContent={"start"}
+          gap={2}
+          m={5}
+        >
+          <Grid
+            display="flex"
+            flexDirection={"row"}
+            sx={{
+              width: "100%",
+              gap: 2,
+            }}
           >
-            {user
-              ? "Editing Appointment of " +
-                user?.firstName +
-                " " +
-                user?.lastName
-              : "Editing Appointment"}
-          </Typography>
-          <Box display="flex" justifyContent="center" gap={2} m={5}>
-            <Grid display="flex" flexDirection={"column"} sx={{ width: "50%" }}>
-              <Autocomplete
-                id="title"
-                options={appointmentTypes}
-                value={form.title || null}
-                onChange={handleSelectChange("title")}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select your title"
-                    required
-                    error={form.title.trim() === ""}
-                    helperText={
-                      form.title.trim() === "" ? "The title is required" : ""
-                    }
-                  />
-                )}
-              />
-            </Grid>
+            <Autocomplete
+              id="title"
+              fullWidth
+              options={APPOINTMENT_TYPES}
+              value={form.title || null}
+              onChange={handleSelectChange("title")}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select your title"
+                  required
+                  error={form.title.trim() === ""}
+                  helperText={
+                    form.title.trim() === "" ? "The title is required" : ""
+                  }
+                />
+              )}
+            />
 
-            <Grid display="flex" flexDirection={"column"} sx={{ width: "50%" }}>
-              <TextField
-                fullWidth
-                id="date"
-                type="date"
-                value={form.date}
-                onChange={handleChange("date")}
-                label="Select the date"
-                error={!!error}
-                helperText={error || " "}
-              />
-            </Grid>
-          </Box>
-
-          <Box display="flex" justifyContent="center" gap={2} m={5}>
-            <Grid display="flex" flexDirection={"column"} sx={{ width: "50%" }}>
-              <Typography
-                color="primary"
-                gutterBottom
-                sx={{ textAlign: "left" }}
-              >
-                Enter your Start Time:
-              </Typography>
-              <TextField
-                fullWidth
-                type="time"
-                id="starttime"
-                value={form.startTime}
-                onChange={handleChange("startTime")}
-                error={!!errorStartTime}
-                helperText={errorStartTime || " "}
-              />
-            </Grid>
-            <Grid display="flex" flexDirection={"column"} sx={{ width: "50%" }}>
-              <Typography
-                color="primary"
-                gutterBottom
-                sx={{ textAlign: "left" }}
-              >
-                Enter your End Time:
-              </Typography>
-              <TextField
-                fullWidth
-                type="time"
-                id="endtime"
-                value={form.endTime}
-                onChange={handleChange("endTime")}
-                error={!!errorEndTime}
-                helperText={errorEndTime || " "}
-              />
-            </Grid>
-          </Box>
-          <Box m={5}>
             <TextField
               fullWidth
-              required
-              label="Enter your description!"
-              id="description"
-              multiline
-              rows={4}
-              value={form.description}
-              onChange={handleChange("description")}
-              error={form.description.trim() === ""}
-              helperText={
-                form.description.trim() === ""
-                  ? "Please enter a description"
-                  : ""
-              }
+              id="date"
+              type="date"
+              value={form.date}
+              onChange={handleChange("date")}
+              label="Select the date"
+              error={!!error}
+              helperText={error || " "}
             />
-          </Box>
+          </Grid>
+        </Box>
 
-          <Box m={5}>
+        <Box display="flex" m={5}>
+          <Grid
+            display="flex"
+            flexDirection={"row"}
+            sx={{
+              width: "100%",
+              gap: 2,
+            }}
+          >
+            <TextField
+              fullWidth
+              type="time"
+              id="starttime"
+              label="Enter your Start Time:"
+              value={form.startTime}
+              onChange={handleChange("startTime")}
+              error={!!errorStartTime}
+              helperText={errorStartTime || " "}
+            />
+            <TextField
+              fullWidth
+              type="time"
+              id="endtime"
+              label="Enter your End Time:"
+              value={form.endTime}
+              onChange={handleChange("endTime")}
+              error={!!errorEndTime}
+              helperText={errorEndTime || " "}
+            />
             <Autocomplete
               id="status"
+              fullWidth
               options={appointmentStatus}
               value={form.status || null}
               onChange={handleSelectStatus("status")}
@@ -368,53 +350,96 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
                 />
               )}
             />
-          </Box>
-          <Box m={5}>
-            <TextField
-              fullWidth
-              label="Enter your observations!"
-              id="observations"
-              multiline
-              rows={4}
-              value={form.observations}
-              onChange={handleChange("observations")}
-            />
-          </Box>
-          <Box display="flex" justifyContent="space-between">
-            <Button
-              sx={{ marginLeft: "50px" }}
-              endIcon={<ReplyOutlinedIcon />}
-              variant="contained"
-              onClick={() => {
-                router.push("/appointments");
-              }}
+          </Grid>
+        </Box>
+        <Box m={5}>
+          <Accordion defaultExpanded sx={{ backgroundColor: "transparent" }}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1-content"
+              id="panel1-header"
             >
-              GO BACK
-            </Button>
-            <Button
-              type="submit"
-              sx={{ marginRight: "50px" }}
-              endIcon={<SendIcon />}
-              variant="contained"
-              disabled={statusSubmit}
+              <Typography variant="caption" component="span">
+                Enter your description
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <TextField
+                fullWidth
+                required
+                id="description"
+                multiline
+                rows={3}
+                value={form.description}
+                onChange={handleChange("description")}
+                error={form.description.trim() === ""}
+                helperText={
+                  form.description.trim() === ""
+                    ? "Please enter a description"
+                    : ""
+                }
+              />
+            </AccordionDetails>
+          </Accordion>
+          <Accordion sx={{ backgroundColor: "transparent" }}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel2-content"
+              id="panel2-header"
             >
-              SUBMIT
-            </Button>
+              <Typography variant="caption" component="span">
+                Enter your observations
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <TextField
+                fullWidth
+                label="Enter your observations"
+                id="observations"
+                multiline
+                rows={3}
+                value={form.observations}
+                onChange={handleChange("observations")}
+              />
+            </AccordionDetails>
+          </Accordion>
+        </Box>
 
-            <Snackbar
-              sx={{ width: "100%" }}
-              open={open}
-              autoHideDuration={6000}
-              onClose={() => setOpen(false)}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            >
-              <Alert variant="filled" severity={severity}>
-                {message}
-              </Alert>
-            </Snackbar>
-          </Box>
-        </form>
-      </>
+        <Box display="flex" justifyContent="space-between">
+          <Button
+            color="error"
+            sx={{ marginLeft: "50px" }}
+            endIcon={<ReplyOutlinedIcon />}
+            variant="contained"
+            onClick={() => {
+              router.push("/appointments");
+            }}
+          >
+            GO BACK
+          </Button>
+          <Button
+            type="submit"
+            sx={{ marginRight: "50px" }}
+            endIcon={<SendIcon />}
+            variant="contained"
+            disabled={statusSubmit}
+          >
+            SUBMIT
+          </Button>
+
+          <Snackbar
+            sx={{ width: "100%" }}
+            open={showSnackbar}
+            autoHideDuration={6000}
+            onClose={() => setShowSnakbar(false)}
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          >
+            <Alert variant="filled" severity={severity}>
+              {message}
+            </Alert>
+          </Snackbar>
+        </Box>
+      </form>
     </Box>
   );
 }
