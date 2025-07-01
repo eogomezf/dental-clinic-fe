@@ -4,10 +4,8 @@ import { SignUpFormProps, SignUpFormValues } from "./Forms.types";
 import { SignUpSchema } from "./ValidationSchemas";
 import { Button, Box, Stack } from "@mui/material";
 import { CustomTextField } from "./CustomTextField";
-//mport { useRouter } from 'next/navigation';
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit }) => {
-  //const router = useRouter();
 
   const initialValues: SignUpFormValues = {
     firstName: "",

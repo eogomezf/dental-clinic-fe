@@ -2,16 +2,14 @@ import FormCreateAppointment from "../components/Forms/FormCreateAppointment";
 import { User } from "../models/users.model";
 import { fetchUsers } from "../services/users.service";
 
-async function Createpage() {
+async function CreatePage() {
   const usersData = await fetchUsers();
   const users = usersData.allUsers || [];
-  const filtred = users.filter((user: User) => user.role !== "admin");
+  const filteredUSer = users.filter((user: User) => user.role !== "admin" ) || [];
 
   return (
-    <div>
-      <FormCreateAppointment usersList={filtred} appointmentsList={[]} />
-    </div>
+      <FormCreateAppointment usersList={filteredUSer} />
   );
 }
 
-export default Createpage;
+export default CreatePage;
