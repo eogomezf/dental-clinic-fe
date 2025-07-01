@@ -27,11 +27,20 @@ export async function loginAction({ email, password }: SignInFormValues) {
     sameSite: "lax",
   });
 
+  cookie.set("user", JSON.stringify(response.user), {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 60 * 60 * 24 * 1,
+    path: "/",
+    sameSite: "lax",
+  });
+
   return "ok";
 }
 
 export async function logoutAction() {
   const cookieStore = await cookies();
   cookieStore.delete("jwt_token");
+  cookieStore.delete("user");
   redirect("/");
 }

@@ -8,27 +8,30 @@ import Container from "@mui/material/Container";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 import { useRouter } from "next/navigation";
-import { logoutAction } from "@/app/login/server-actions";
-import { getUserInformation } from "../services/users.service";
+import { logoutAction } from "../action/actions";
+import { getUserInfo } from "../services/users.service";
 import { useState } from "react";
 import { Button } from "@mui/material";
 
 type UserData = {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   role: string;
 };
 
 export default function ResponsiveAppBar() {
   const [userData, setUserData] = useState<UserData>({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     role: "",
   });
 
   React.useEffect(() => {
-    getUserInformation().then((data) => {
+    getUserInfo().then((data) => {
       if (data) {
         setUserData({
-          fullName: data.fullName ? data.fullName : "",
+          firstName: data.firstName ? data.firstName : "",
+          lastName: data.lastName ? data.lastName : "",
           role: data.role ? data.role : "",
         });
       }
@@ -106,7 +109,8 @@ export default function ResponsiveAppBar() {
               component="div"
               sx={{ flexGrow: 1, textAlign: "right" }}
             >
-              {userData.role} {userData.fullName}{" "}
+              {userData.role === "admin" ? "Doctor" : "Patient"}{" "}
+              {userData.firstName} {userData.lastName}{" "}
             </Typography>
           </Box>
           <Box sx={{ flexGrow: 0 }}>

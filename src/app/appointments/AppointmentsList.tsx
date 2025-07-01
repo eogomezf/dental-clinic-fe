@@ -1,13 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import { styled } from "@mui/material/styles";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
-
 import {
   Box,
   Tooltip,
@@ -29,6 +27,8 @@ import Container from "@mui/material/Container";
 import Sheet from "@mui/joy/Sheet";
 import Delete from "@mui/icons-material/Delete";
 import Add from "@mui/icons-material/Add";
+import { styled } from "@mui/material/styles";
+import TextField from "@mui/material/TextField";
 import {
   fetchAppointments,
   deleteAppointment,
@@ -40,7 +40,6 @@ import {
 import { formatDateRange, getAppointmentStatus } from "../utils/dateHelpers";
 import { EditCalendar } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import { User } from "../models/users.model";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -57,21 +56,32 @@ function AppointmentsList({
   usersList,
   userRole,
 }: AppointmentsListProps & { userRole: string }) {
-  const getUserName = (id: string) => {
-    const user = usersList.find((user: User) => user._id === id);
-    return user ? `${user.firstName} ${user.lastName}` : "No data";
-  };
   const router = useRouter();
 
-  const [appointments, setAppointments] =
-    useState<Appointment[]>(appointmentsList);
+  const userMap = new Map(
+    usersList.map((user) => [
+      user._id,
+      { firstName: user.firstName, lastName: user.lastName },
+    ])
+  );
 
+  const fullAppointmentList = appointmentsList.map((appointment) => {
+    const userData = userMap.get(appointment.user);
+
+    return {
+      ...appointment,
+      firstName: userData?.firstName || "No data",
+      lastName: userData?.lastName || "No data",
+    };
+  });
+
+  const [appointments, setAppointments] = useState(fullAppointmentList);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const emptyRows =
     page > 0
-      ? Math.max(0, (1 + page) * rowsPerPage - appointmentsList.length)
+      ? Math.max(0, (1 + page) * rowsPerPage - fullAppointmentList.length)
       : 0;
 
   const handleChangePage = (
@@ -109,7 +119,19 @@ function AppointmentsList({
       await deleteAppointment(appointmentId);
       const updatedAppointmentsFetched = await fetchAppointments();
       const updatedAppointments = updatedAppointmentsFetched.appointments || [];
-      setAppointments(updatedAppointments);
+      const newFullAppointmentList = updatedAppointments.map(
+        (appointment: Appointment) => {
+          const userData = userMap.get(appointment.user);
+
+          return {
+            ...appointment,
+            firstName: userData?.firstName || "No data",
+            lastName: userData?.lastName || "No data",
+          };
+        }
+      );
+
+      setAppointments(newFullAppointmentList);
 
       setSnackbarMessage("The item has been deleted");
       setSnackbarSeverity("success");
@@ -159,6 +181,20 @@ function AppointmentsList({
     router.push("/add-appointments");
   };
 
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredAppointments = useMemo(() => {
+    return appointments.filter(
+      (appointment) =>
+        appointment.firstName
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        appointment.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        appointment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        appointment.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, appointments]);
+
   return (
     <Container className="flex flex-col items-center   justify-center py-4 ">
       <Box
@@ -179,6 +215,21 @@ function AppointmentsList({
             Add Appointment
           </Button>
         </Tooltip>
+        <Typography
+          variant="h6"
+          noWrap
+          component="div"
+          sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+        ></Typography>
+
+        <TextField
+          id="outlined-search"
+          label="Search appointment"
+          type="search"
+          size="small"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </Box>
       <Box>
         <Sheet sx={{ height: 480, overflow: "auto" }}>
@@ -201,69 +252,90 @@ function AppointmentsList({
             </TableHead>
             <TableBody>
               {(rowsPerPage > 0
-                ? appointments.slice(
+                ? filteredAppointments.slice(
                     page * rowsPerPage,
                     page * rowsPerPage + rowsPerPage
                   )
-                : appointments
-              ).map(({ id, title, description, startTime, endTime, user }) => (
-                <TableRow
-                  key={id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  {userRole === "Doctor" ? (
-                    <TableCell component="th" scope="appointment">
-                      {user ? getUserName(user) : "No data"}
+                : filteredAppointments
+              ).map(
+                ({
+                  id,
+                  title,
+                  description,
+                  startTime,
+                  endTime,
+                  user,
+                  status,
+                  firstName,
+                  lastName,
+                }) => (
+                  <TableRow
+                    key={id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    {userRole === "admin" ? (
+                      <TableCell component="th" scope="appointment">
+                        {/* {user ? getUserName(user) : "No data"} */}
+                        {firstName} {lastName}
+                      </TableCell>
+                    ) : null}
+                    <TableCell>{title}</TableCell>
+                    <TableCell>{description}</TableCell>
+                    <TableCell>
+                      {(() => {
+                        const { datePart, time } = formatDateRange(
+                          startTime,
+                          endTime
+                        );
+                        return (
+                          <>
+                            <div>{datePart}</div>
+                            <div>{time}</div>
+                          </>
+                        );
+                      })()}
                     </TableCell>
-                  ) : null}
-                  <TableCell>{title}</TableCell>
-                  <TableCell>{description}</TableCell>
-                  <TableCell>
-                    {(() => {
-                      const { datePart, time } = formatDateRange(
-                        startTime,
-                        endTime
-                      );
-                      return (
-                        <>
-                          <div>{datePart}</div>
-                          <div>{time}</div>
-                        </>
-                      );
-                    })()}
-                  </TableCell>
-                  <TableCell>
-                    {(() => {
-                      const { label, color, Icon } =
-                        getAppointmentStatus(startTime);
-                      return (
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <Icon color={color} fontSize="small" />
-                          <Typography color={color} fontSize="0.9rem">
-                            {label}
-                          </Typography>
-                        </Stack>
-                      );
-                    })()}
-                  </TableCell>
-                  <TableCell>
-                    <Stack spacing={2} direction="row" justifyContent="center">
-                      <ButtonGroup
-                        variant="text"
-                        aria-label="Appointment actions"
+                    <TableCell>
+                      {(() => {
+                        const { label, color, Icon } = getAppointmentStatus(
+                          startTime,
+                          status
+                        );
+                        return (
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            spacing={1}
+                          >
+                            <Icon color={color} fontSize="small" />
+                            <Typography color={color} fontSize="0.9rem">
+                              {label}
+                            </Typography>
+                          </Stack>
+                        );
+                      })()}
+                    </TableCell>
+                    <TableCell>
+                      <Stack
+                        spacing={2}
+                        direction="row"
+                        justifyContent="center"
                       >
-                        <Tooltip title="Edit Appointment">
+                        <ButtonGroup
+                          variant="text"
+                          aria-label="Appointment actions"
+                        >
                           <Button
+                            disabled={status === "attended"}
                             onClick={() => {
                               router.push("/appointments/" + id);
                             }}
                           >
                             <EditCalendar sx={{ color: "green" }} />
                           </Button>
-                        </Tooltip>
 
-                        <Tooltip title="Delete Appointment">
                           <Button
+                            disabled={status === "attended"}
                             onClick={() =>
                               handleOpenModal({
                                 id,
@@ -272,18 +344,19 @@ function AppointmentsList({
                                 startTime,
                                 endTime,
                                 user,
+                                status,
                               })
                             }
                             color="error"
                           >
                             <Delete />
                           </Button>
-                        </Tooltip>
-                      </ButtonGroup>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              ))}
+                        </ButtonGroup>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                )
+              )}
               {emptyRows > 0 && (
                 <TableRow style={{ height: 53 * emptyRows }}>
                   <TableCell colSpan={6} />

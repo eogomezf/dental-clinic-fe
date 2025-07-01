@@ -1,11 +1,13 @@
 "use server";
 import { cookies } from "next/headers";
+import { fetchAPI } from "@/utils/api";
 import { Appointment } from "../models/appointments.model";
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export async function fetchAppointments() {
   const cookieStore = await cookies();
   const jwtToken = cookieStore.get("jwt_token")?.value;
+
   try {
     const response = await fetch(`${BASE_URL}/appointment`, {
       method: "GET",
@@ -13,21 +15,15 @@ export async function fetchAppointments() {
         "x-access-token": jwtToken || "",
       },
     });
-
     if (response.status === 204) {
       console.log("No appointments found");
       return [];
     }
-    // if (!response.ok) {
-    //   return response.body || [];
-    // } else {
-    // }
-    console.log("Response from fetchAppointments:", response);
-    console.log("Response from fetchAppointments status:", response.status);
 
     return response.json();
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return [];
   }
 }
 
@@ -35,44 +31,36 @@ export async function EditAppointment(appointment: Appointment) {
   const cookieStore = await cookies();
   const jwtToken = cookieStore.get("jwt_token")?.value;
 
-  console.log("Appointment to save", appointment);
+  try {
+    const response = await fetchAPI(
+      `/appointment/${appointment.id}`,
+      "PUT",
+      appointment,
+      {
+        "x-access-token": jwtToken || "",
+      }
+    );
 
-  const response = await fetch(`${BASE_URL}/appointment/${appointment.id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "x-access-token": jwtToken || "",
-    },
-    body: JSON.stringify(appointment),
-  });
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || "Updating appointment failed");
+    return response;
+  } catch (error) {
+    return error;
   }
-  return response.json();
 }
 
 export async function deleteAppointment(id: string) {
   const cookieStore = await cookies();
   const jwtToken = cookieStore.get("jwt_token")?.value;
-  const response = await fetch(`${BASE_URL}/appointment/${id}`, {
-    method: "DELETE",
-    headers: {
+
+  try {
+    const response = await fetchAPI(`/appointment/${id}`, "DELETE", undefined, {
       "x-access-token": jwtToken || "",
-    },
-  });
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || "Deleting appointment failed");
+    });
+
+    return response;
+  } catch (error) {
+    return error;
   }
 }
-// export interface AppointmentPayload {
-//   title: string;
-//   description: string;
-//   startTime: string | Date;
-//   endTime: string | Date;
-//   user: string;
-// }
 
 export async function createAppointment(appointment: Appointment) {
   const cookieStore = await cookies();
@@ -82,20 +70,13 @@ export async function createAppointment(appointment: Appointment) {
     throw new Error("Token not found in cookies");
   }
 
-  const response = await fetch(`${BASE_URL}/appointment`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-access-token": jwtToken,
-    },
-    body: JSON.stringify(appointment),
-    credentials: "include",
-  });
+  try {
+    const response = await fetchAPI("/appointment", "POST", appointment, {
+      "x-access-token": jwtToken || "",
+    });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || "Failed to create appointment");
+    return response;
+  } catch (error) {
+    return error;
   }
-
-  return response.json();
 }

@@ -7,7 +7,7 @@ import {
   useCallback,
 } from "react";
 import { useRouter } from "next/navigation";
-import { logoutAction } from "@/app/login/server-actions";
+import { logoutAction } from "@/app/action/actions";
 
 type UserProfile = {
   id: string;

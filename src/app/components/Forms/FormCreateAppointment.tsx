@@ -6,12 +6,7 @@ import {
   Box,
   TextField,
   Button,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
   Typography,
-  FormHelperText,
   Snackbar,
   Alert,
 } from "@mui/material";
@@ -20,6 +15,7 @@ import SendIcon from "@mui/icons-material/Send";
 import { appointmentSchema } from "../../add-appointments/AppointmentSchema";
 import { createAppointment } from "../../services/appointments.service";
 import { AppointmentsListProps } from "@/app/models/appointments.model";
+import Autocomplete from "@mui/material/Autocomplete";
 
 interface FormData {
   id: string;
@@ -29,9 +25,16 @@ interface FormData {
   endTime: string;
   user: string;
   description: string;
+  status: string;
 }
 
 const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
+  console.log("FormCreateAppointment rendered with usersList:", usersList);
+  console.log(
+    "FormCreateAppointment rendered with usersList[0]:",
+    usersList[0]
+  );
+
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const formik = useFormik<FormData>({
@@ -41,8 +44,9 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
       date: "",
       startTime: "",
       endTime: "",
-      user: "",
+      user: usersList.length > 0 ? usersList[0]._id : "",
       description: "",
+      status: "pending",
     },
     validationSchema: appointmentSchema,
     onSubmit: async (values) => {
@@ -54,6 +58,7 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
           startTime: `${values.date}T${values.startTime}:00`,
           endTime: `${values.date}T${values.endTime}:00`,
           description: values.description,
+          status: "pending",
         };
 
         const result = await createAppointment(payload);
@@ -112,33 +117,24 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
       <form onSubmit={formik.handleSubmit}>
         <Box display="flex" justifyContent="center" gap={2} m={5}>
           <Box sx={{ width: "50%" }}>
-            <FormControl
-              fullWidth
-              required
-              error={formik.touched.title && Boolean(formik.errors.title)}
-            >
-              <InputLabel id="appointment-title-label">
-                Appointment Type
-              </InputLabel>
-              <Select
-                labelId="appointment-title-label"
-                id="title"
-                name="title"
-                value={formik.values.title}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                label="Appointment Type"
-              >
-                {appointmentTypes.map((type) => (
-                  <MenuItem key={type} value={type}>
-                    {type}
-                  </MenuItem>
-                ))}
-              </Select>
-              {formik.touched.title && formik.errors.title && (
-                <FormHelperText>{formik.errors.title}</FormHelperText>
+            <Autocomplete
+              id="title"
+              options={appointmentTypes}
+              value={formik.values.title}
+              onChange={(event, newValue) => {
+                formik.setFieldValue("title", newValue);
+              }}
+              onBlur={() => formik.setFieldTouched("title", true)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Appointment Type"
+                  required
+                  error={formik.touched.title && Boolean(formik.errors.title)}
+                  helperText={formik.touched.title && formik.errors.title}
+                />
               )}
-            </FormControl>
+            />
           </Box>
           <Box sx={{ width: "50%" }}>
             <TextField
@@ -159,30 +155,29 @@ const FormCreateAppointment = ({ usersList }: AppointmentsListProps) => {
         </Box>
 
         <Box m={5}>
-          <FormControl fullWidth>
-            <InputLabel id="user-label">Select User</InputLabel>
-            <Select
-              labelId="user-label"
-              id="user"
-              name="user"
-              value={formik.values.user || ""}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.user && Boolean(formik.errors.user)}
-            >
-              {usersList.map(
-                (user: {
-                  _id: string;
-                  firstName: string;
-                  lastName: string;
-                }) => (
-                  <MenuItem key={user._id} value={user._id}>
-                    {user.firstName} {user.lastName}
-                  </MenuItem>
-                )
-              )}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            id="user"
+            options={usersList}
+            getOptionLabel={(option) =>
+              `${option.firstName} ${option.lastName}`
+            }
+            value={
+              usersList.find((user) => user._id === formik.values.user) || null
+            }
+            onChange={(event, newValue) => {
+              formik.setFieldValue("user", newValue?._id || "");
+            }}
+            onBlur={() => formik.setFieldTouched("user", true)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Select User"
+                required
+                error={formik.touched.user && Boolean(formik.errors.user)}
+                helperText={formik.touched.user && formik.errors.user}
+              />
+            )}
+          />
         </Box>
 
         <Box display="flex" justifyContent="center" gap={2} m={5}>

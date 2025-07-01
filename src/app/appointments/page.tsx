@@ -4,9 +4,8 @@ import NavBar from "./NavBar";
 import Container from "@mui/material/Container";
 import { Typography } from "@mui/material";
 import { fetchAppointments } from "../services/appointments.service";
-import { fetchUsers } from "../services/users.service";
+import { fetchUsers, getUserInfo } from "../services/users.service";
 import { Appointment } from "../models/appointments.model";
-import { getUserInformation } from "../services/users.service";
 
 export default async function page() {
   const appointmentsFetched = await fetchAppointments();
@@ -20,7 +19,7 @@ export default async function page() {
     });
   }
 
-  const loggedUser = await getUserInformation();
+  const loggedUser = await getUserInfo();
   const userRole = loggedUser?.role || "";
 
   const usersData = await fetchUsers();

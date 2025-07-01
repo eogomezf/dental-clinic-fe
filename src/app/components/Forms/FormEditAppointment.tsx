@@ -4,36 +4,25 @@ import { useEffect, useState } from "react";
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import {
-  TextField,
-  MenuItem,
-  FormControl,
-  Select,
-  InputLabel,
-  FormHelperText,
-} from "@mui/material";
+import { TextField } from "@mui/material";
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
 import SendIcon from "@mui/icons-material/Send";
 import { Button, Grid, Alert, Snackbar } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 import {
   EditAppointment,
   fetchAppointments,
 } from "../../services/appointments.service";
 import { Appointment } from "@/app/models/appointments.model";
-import { SelectChangeEvent } from "@mui/material/Select";
+import { AppointmentEditProps } from "@/app/models/appointments.model";
 
-interface AppointmentProp {
-  appointment: Appointment;
-}
-
-function FormEditAppointment({ appointment }: AppointmentProp) {
+function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
   const [errorStartTime, setErrorStartTime] = useState("");
   const [errorEndTime, setErrorEndTime] = useState("");
   const [statusSubmit, setStatusSubmit] = useState(false);
-
   const [message, setMessage] = useState("");
 
   const [severity, setSeverity] = useState<
@@ -51,6 +40,8 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
     date: "",
     startTime: "",
     endTime: "",
+    status: "",
+    observations: "",
   });
 
   useEffect(() => {
@@ -63,6 +54,8 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
       date: start.toISOString().split("T")[0],
       startTime: start.toTimeString().slice(0, 5),
       endTime: end.toTimeString().slice(0, 5),
+      status: appointment.status || "",
+      observations: appointment.observations || "",
     });
   }, [appointment]);
 
@@ -162,10 +155,19 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
   /*
   const handleSelectChange =
     (field: keyof typeof form) =>
-    (event: React.ChangeEvent<{ value: unknown }>) => {
+    (event: React.SyntheticEvent, value: string | null) => {
       setForm((prevForm) => ({
         ...prevForm,
-        [field]: event.target.value as string,
+        [field]: value || "",
+      }));
+    };
+
+  const handleSelectStatus =
+    (field: keyof typeof form) =>
+    (event: React.SyntheticEvent, value: string | null) => {
+      setForm((prevForm) => ({
+        ...prevForm,
+        [field]: value || "",
       }));
     };
     */
@@ -179,7 +181,15 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
     };
 
   const handleUpdate = async () => {
-    const { title, description, date, startTime, endTime } = form;
+    const {
+      title,
+      description,
+      date,
+      startTime,
+      endTime,
+      status,
+      observations,
+    } = form;
     const start = new Date(`${date}T${startTime}`);
     const end = new Date(`${date}T${endTime}`);
 
@@ -189,6 +199,8 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
       description,
       startTime: start,
       endTime: end,
+      status: status,
+      observations: observations,
     };
 
     const res = await EditAppointment(appointment);
@@ -223,6 +235,8 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
     "Whitening Session",
   ];
 
+  const appointmentStatus = ["pending", "cancel", "attended"];
+
   return (
     <Box
       sx={{
@@ -245,34 +259,34 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
             gutterBottom
             sx={{ textAlign: "center", pt: 4 }}
           >
-            Editing Appointment
-            {/* {appointment.user
+            {user
               ? "Editing Appointment of " +
-                appointment.user?.firstName +
+                user?.firstName +
                 " " +
-                appointment.user?.lastName
-              : "Editing Appointment"} */}
+                user?.lastName
+              : "Editing Appointment"}
           </Typography>
           <Box display="flex" justifyContent="center" gap={2} m={5}>
-            <FormControl fullWidth required error={form.title.trim() === ""}>
-              <InputLabel id="title-label">Select your title</InputLabel>
-              <Select
-                labelId="title-label"
+            <Grid display="flex" flexDirection={"column"} sx={{ width: "50%" }}>
+              <Autocomplete
                 id="title"
-                value={form.title}
+                options={appointmentTypes}
+                value={form.title || null}
                 onChange={handleSelectChange("title")}
-                label="Select your title"
-              >
-                {appointmentTypes.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-              {form.title.trim() === "" && (
-                <FormHelperText>The title is required</FormHelperText>
-              )}
-            </FormControl>
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select your title"
+                    required
+                    error={form.title.trim() === ""}
+                    helperText={
+                      form.title.trim() === "" ? "The title is required" : ""
+                    }
+                  />
+                )}
+              />
+            </Grid>
+
             <Grid display="flex" flexDirection={"column"} sx={{ width: "50%" }}>
               <TextField
                 fullWidth
@@ -341,6 +355,37 @@ function FormEditAppointment({ appointment }: AppointmentProp) {
                   ? "Please enter a description"
                   : ""
               }
+            />
+          </Box>
+
+          <Box m={5}>
+            <Autocomplete
+              id="status"
+              options={appointmentStatus}
+              value={form.status || null}
+              onChange={handleSelectStatus("status")}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select the status"
+                  required
+                  error={form.status.trim() === ""}
+                  helperText={
+                    form.status.trim() === "" ? "The status is required" : ""
+                  }
+                />
+              )}
+            />
+          </Box>
+          <Box m={5}>
+            <TextField
+              fullWidth
+              label="Enter your observations!"
+              id="observations"
+              multiline
+              rows={4}
+              value={form.observations}
+              onChange={handleChange("observations")}
             />
           </Box>
           <Box display="flex" justifyContent="space-between">

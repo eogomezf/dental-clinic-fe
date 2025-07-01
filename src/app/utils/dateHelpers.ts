@@ -35,50 +35,75 @@ export function formatDateRange(
 }
 
 export function getAppointmentStatus(
-  appointmentDate: string | Date
+  appointmentDate: string | Date,
+  status: string
 ): AppointmentStatus {
-  const now = new Date();
-  const targetDate = new Date(appointmentDate);
-
-  if (isNaN(targetDate.getTime())) {
-    throw new Error("Invalid appointment date");
-  }
-
-  const nowMidnight = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate()
-  );
-  const targetMidnight = new Date(
-    targetDate.getFullYear(),
-    targetDate.getMonth(),
-    targetDate.getDate()
-  );
-
-  const msPerDay = 1000 * 60 * 60 * 24;
-  const diffDays = Math.floor(
-    (targetMidnight.getTime() - nowMidnight.getTime()) / msPerDay
-  );
-
-  if (diffDays < 0) {
+  if (status === "cancel") {
     return {
-      label: "Overdue",
+      label: "Cancelled",
       color: "error",
       Icon: Cancel,
     };
   }
 
-  if (diffDays <= 1) {
+  if (status === "attended") {
     return {
-      label: "Almost Due",
-      color: "warning",
-      Icon: WarningAmber,
+      label: "Attended",
+      color: "info",
+      Icon: CheckCircle,
+    };
+  }
+
+  if (status === "pending") {
+    const now = new Date();
+    const targetDate = new Date(appointmentDate);
+
+    if (isNaN(targetDate.getTime())) {
+      throw new Error("Invalid appointment date");
+    }
+
+    const nowMidnight = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+    const targetMidnight = new Date(
+      targetDate.getFullYear(),
+      targetDate.getMonth(),
+      targetDate.getDate()
+    );
+
+    const msPerDay = 1000 * 60 * 60 * 24;
+    const diffDays = Math.floor(
+      (targetMidnight.getTime() - nowMidnight.getTime()) / msPerDay
+    );
+
+    if (diffDays < 0) {
+      return {
+        label: "Overdue",
+        color: "error",
+        Icon: Cancel,
+      };
+    }
+
+    if (diffDays <= 1) {
+      return {
+        label: "Almost Due",
+        color: "warning",
+        Icon: WarningAmber,
+      };
+    }
+
+    return {
+      label: "In Progress",
+      color: "success",
+      Icon: CheckCircle,
     };
   }
 
   return {
-    label: "In Progress",
-    color: "success",
-    Icon: CheckCircle,
+    label: "Unknown",
+    color: "warning",
+    Icon: WarningAmber,
   };
 }
