@@ -15,10 +15,6 @@ import {
 } from "../../services/appointments.service";
 import { Appointment } from "@/app/models/appointments.model";
 import { AppointmentEditProps } from "@/app/models/appointments.model";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const APPOINTMENT_TYPES = [
   "Brace Consultation",
@@ -43,7 +39,7 @@ const APPOINTMENT_TYPES = [
 function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
   const router = useRouter();
   const [showSnackbar, setShowSnakbar] = useState(false);
-  const [error, setError] = useState("");
+  const [errorDate, setErrorDate] = useState("");
   const [errorStartTime, setErrorStartTime] = useState("");
   const [errorEndTime, setErrorEndTime] = useState("");
   const [statusSubmit, setStatusSubmit] = useState(false);
@@ -91,10 +87,10 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
   const validateDate = (value: string) => {
     const today = new Date().toISOString().split("T")[0];
     if (value < today) {
-      setError("You cannot set a date before today");
+      setErrorDate("You cannot set a date before today");
       setStatusSubmit(true);
     } else {
-      setError("");
+      setErrorDate("");
       setStatusSubmit(false);
     }
   };
@@ -241,7 +237,7 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
         mt: 2,
         border: "solid 1px gray",
         borderRadius: 2,
-        bgcolor: "#ffffee",
+        bgcolor: "#f8f8f8",
         color: "primary",
       }}
     >
@@ -250,7 +246,10 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
           variant="h5"
           color="primary"
           gutterBottom
-          sx={{ textAlign: "center", pt: 3 }}
+          sx={{
+            textAlign: "center",
+            pt: 3,
+          }}
         >
           {user
             ? "Editing Appointment of " + user?.firstName + " " + user?.lastName
@@ -260,7 +259,6 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
           display="flex"
           flexDirection={"column"}
           justifyContent={"start"}
-          gap={2}
           m={5}
         >
           <Grid
@@ -269,6 +267,7 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
             sx={{
               width: "100%",
               gap: 2,
+              mb: -3,
             }}
           >
             <Autocomplete
@@ -297,8 +296,8 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
               value={form.date}
               onChange={handleChange("date")}
               label="Select the date"
-              error={!!error}
-              helperText={error || " "}
+              error={!!errorDate}
+              helperText={errorDate || " "}
             />
           </Grid>
         </Box>
@@ -310,6 +309,7 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
             sx={{
               width: "100%",
               gap: 2,
+              mb: -3,
             }}
           >
             <TextField
@@ -353,62 +353,39 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
           </Grid>
         </Box>
         <Box m={5}>
-          <Accordion defaultExpanded sx={{ backgroundColor: "transparent" }}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1-content"
-              id="panel1-header"
-            >
-              <Typography variant="caption" component="span">
-                Enter your description
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <TextField
-                fullWidth
-                required
-                id="description"
-                multiline
-                rows={3}
-                value={form.description}
-                onChange={handleChange("description")}
-                error={form.description.trim() === ""}
-                helperText={
-                  form.description.trim() === ""
-                    ? "Please enter a description"
-                    : ""
-                }
-              />
-            </AccordionDetails>
-          </Accordion>
-          <Accordion sx={{ backgroundColor: "transparent" }}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel2-content"
-              id="panel2-header"
-            >
-              <Typography variant="caption" component="span">
-                Enter your observations
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <TextField
-                fullWidth
-                label="Enter your observations"
-                id="observations"
-                multiline
-                rows={3}
-                value={form.observations}
-                onChange={handleChange("observations")}
-              />
-            </AccordionDetails>
-          </Accordion>
+          <TextField
+            fullWidth
+            required
+            variant="outlined"
+            id="description"
+            multiline
+            sx={{
+              mb: 4,
+            }}
+            rows={3}
+            label="Enter your description"
+            value={form.description}
+            onChange={handleChange("description")}
+            error={form.description.trim() === ""}
+            helperText={
+              form.description.trim() === "" ? "Please enter a description" : ""
+            }
+          />
+          <TextField
+            fullWidth
+            label="Enter your observations"
+            id="observations"
+            multiline
+            rows={3}
+            value={form.observations}
+            onChange={handleChange("observations")}
+          />
         </Box>
 
-        <Box display="flex" justifyContent="space-between">
+        <Box m={5} display="flex" justifyContent="space-between">
           <Button
             color="error"
-            sx={{ marginLeft: "50px" }}
+            // sx={{ marginLeft: "50px" }}
             endIcon={<ReplyOutlinedIcon />}
             variant="contained"
             onClick={() => {
@@ -419,7 +396,7 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
           </Button>
           <Button
             type="submit"
-            sx={{ marginRight: "50px" }}
+            // sx={{ marginRight: "50px" }}
             endIcon={<SendIcon />}
             variant="contained"
             disabled={statusSubmit}
