@@ -385,7 +385,6 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
         <Box m={5} display="flex" justifyContent="space-between">
           <Button
             color="error"
-            // sx={{ marginLeft: "50px" }}
             endIcon={<ReplyOutlinedIcon />}
             variant="contained"
             onClick={() => {
@@ -396,7 +395,6 @@ function FormEditAppointment({ appointment, user }: AppointmentEditProps) {
           </Button>
           <Button
             type="submit"
-            // sx={{ marginRight: "50px" }}
             endIcon={<SendIcon />}
             variant="contained"
             disabled={statusSubmit}
