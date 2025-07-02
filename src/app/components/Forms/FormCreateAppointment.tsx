@@ -93,15 +93,22 @@ const FormCreateAppointment: React.FC<FormCreateAppointmentProps> = ({
         width: "100%",
         maxWidth: 700,
         mx: "auto",
-        mt: 5,
-        pb: 5,
+        mt: 2,
         border: "solid 1px gray",
         borderRadius: 2,
-        bgcolor: "#ffffee",
+        bgcolor: "#f8f8f8",
         color: "primary",
       }}
     >
-      <Typography variant="h5" gutterBottom sx={{ textAlign: "center", pt: 4 }}>
+      <Typography
+        variant="h5"
+        color="primary"
+        gutterBottom
+        sx={{
+          textAlign: "center",
+          pt: 3,
+        }}
+      >
         Create a New Appointment
       </Typography>
       <form onSubmit={formik.handleSubmit}>
