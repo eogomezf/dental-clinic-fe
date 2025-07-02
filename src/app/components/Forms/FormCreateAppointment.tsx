@@ -47,10 +47,12 @@ interface CreateAppointmentFormData {
   status: string;
 }
 interface FormCreateAppointmentProps {
-  usersList: User[],
+  usersList: User[];
 }
 
-const FormCreateAppointment: React.FC<FormCreateAppointmentProps> = ({ usersList }) => {
+const FormCreateAppointment: React.FC<FormCreateAppointmentProps> = ({
+  usersList,
+}) => {
   const router = useRouter();
   const [showSnackbar, setShowSnackbar] = useState(false);
   const formik = useFormik<CreateAppointmentFormData>({
@@ -65,7 +67,7 @@ const FormCreateAppointment: React.FC<FormCreateAppointmentProps> = ({ usersList
     },
     validationSchema: appointmentSchema,
     onSubmit: async (values) => {
-        try {
+      try {
         const result = await createAppointment({
           ...values,
           startTime: `${values.date}T${values.startTime}:00`,
@@ -223,21 +225,18 @@ const FormCreateAppointment: React.FC<FormCreateAppointmentProps> = ({ usersList
 
         <Box display="flex" justifyContent="space-between" m={5}>
           <Button
-            sx={{ marginLeft: "50px" }}
             endIcon={<ReplyOutlinedIcon />}
             variant="contained"
-            color="primary"
+            color="error"
             onClick={() => router.push("/appointments")}
           >
             CANCEL
           </Button>
           <Button
-            sx={{ marginRight: "50px" }}
             endIcon={<SendIcon />}
             variant="contained"
             color="primary"
             type="submit"
-            onClick={() => alert("Snowball")}
             disabled={formik.isSubmitting}
           >
             {formik.isSubmitting ? "Creating..." : "CREATE APPOINTMENT"}
