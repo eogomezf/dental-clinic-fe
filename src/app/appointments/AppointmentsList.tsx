@@ -200,12 +200,13 @@ function AppointmentsList({
       <Box
         sx={{
           mb: 2,
+
           display: "flex",
           justifyContent: "flex-end",
           width: "100%",
         }}
       >
-        <Tooltip title="Add New Appointment">
+        <Tooltip sx={{ ml: 0.3 }} title="Add New Appointment">
           <Button
             variant="contained"
             color="primary"
@@ -223,6 +224,10 @@ function AppointmentsList({
         ></Typography>
 
         <TextField
+          sx={{
+            mr: 0.5,
+            backgroundColor: "rgb(227 217 217 )",
+          }}
           id="outlined-search"
           label="Search appointment"
           type="search"
@@ -232,7 +237,7 @@ function AppointmentsList({
         />
       </Box>
       <Box>
-        <Sheet sx={{ height: 480, overflow: "auto" }}>
+        <Sheet sx={{ minheight: 300, overflow: "auto" }}>
           <Table
             sx={{ minWidth: 1100, bgcolor: "primary" }}
             aria-label="table with sticky header"
