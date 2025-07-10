@@ -25,10 +25,11 @@ function NotFound() {
         <Typography
           className="text-5xl font-bold text-sky-500 text-center"
           variant="h3"
-          component="h1"
           fontWeight={700}
           fontSize={"3rem"}
           fontFamily={"var(--font-inter)"}
+          component="a"
+          href="/appointments"
         >
           Dentora Pro
         </Typography>
