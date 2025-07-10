@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import LogoutIcon from "@mui/icons-material/Logout";
+
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import IconButton from "@mui/material/IconButton";
@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { logoutAction } from "../action/actions";
 import { getUserInfo } from "../services/users.service";
 import { useState } from "react";
-import CircularProgress from "@mui/material/CircularProgress";
+
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -27,7 +27,6 @@ type UserData = {
 };
 
 const pages = ["appointments", "calendar", "users"];
-//const settings = ["Profile", "Dashboard", "Logout"];
 
 type Setting = {
   label: string;
@@ -47,10 +46,7 @@ export default function ResponsiveAppBar() {
     role: "",
   });
 
-  const [isLoading, setIsLoading] = useState(true);
-
   React.useEffect(() => {
-    setIsLoading(true);
     getUserInfo().then((data) => {
       if (data) {
         setUserData({
@@ -60,21 +56,17 @@ export default function ResponsiveAppBar() {
         });
       }
     });
-    setIsLoading(false);
   }, []);
 
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
 
   const handleLogout = async () => {
-    setIsLoggingOut(true);
     try {
       await logoutAction();
       router.push("/");
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
-      setIsLoggingOut(false);
     }
   };
 
